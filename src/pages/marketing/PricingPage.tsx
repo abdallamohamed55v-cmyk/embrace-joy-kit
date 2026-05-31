@@ -9,7 +9,7 @@ import GlowButton from "@/components/branding/GlowButton";
 import { goBackOr } from "@/lib/navigation";
 import { WORKSPACE_PRODUCT_MAP } from "@/lib/workspacePlans";
 import SEOHead from "@/components/common/SEOHead";
-import { UnlimitedModelsButton } from "@/components/branding/UnlimitedModelsButton";
+import MegsyStar from "@/components/branding/MegsyStar";
 import { PaymentMethods } from "@/components/branding/PaymentMethods";
 import { DodoPaymentsBadge } from "@/components/branding/DodoPaymentsBadge";
 import ExclusiveDiscountCard from "@/components/pricing/ExclusiveDiscountCard";
@@ -84,7 +84,6 @@ const PLANS: PlanCardConfig[] = [
       "Megsy OS — autonomous 24/7 agent",
       "Video generation (credit-based)",
       "Team workspace included",
-      "API access",
       "Priority email support",
       "No daily limits, no waiting queue",
     ],
@@ -109,7 +108,7 @@ const PLANS: PlanCardConfig[] = [
       "Unlimited video generation (premium)",
       "Priority queue — 3× faster generations",
       "Advanced presets & custom branding",
-      "API + webhooks",
+      
       "Analytics dashboard",
       "Early access to new models",
       "24/7 priority chat support",
@@ -479,11 +478,6 @@ const PricingPage = () => {
                   </p>
 
 
-                  {p.monthlyPrice >= 29 && (
-                    <div className="mt-4">
-                      <UnlimitedModelsButton />
-                    </div>
-                  )}
 
                   {/* CTA */}
                   {p.tier === "starter" && !isYearly ? (
@@ -563,14 +557,18 @@ const PricingPage = () => {
                             fontWeight: isUnlimited ? 700 : undefined,
                           }}
                         >
-                          <Check
-                            className="w-4 h-4 shrink-0 mt-0.5"
-                            style={{
-                              color: isUnlimited
-                                ? (p.tier === "starter" ? "#059669" : "#FFD700")
-                                : p.text,
-                            }}
-                          />
+                          {isUnlimited && p.tier !== "starter" ? (
+                            <MegsyStar className="w-4 h-4 shrink-0 mt-0.5" />
+                          ) : (
+                            <Check
+                              className="w-4 h-4 shrink-0 mt-0.5"
+                              style={{
+                                color: isUnlimited
+                                  ? "#059669"
+                                  : p.text,
+                              }}
+                            />
+                          )}
                           <span>{f}</span>
                         </li>
                       );
