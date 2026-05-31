@@ -73,6 +73,25 @@ const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disable
   const [modelPickerOpen, setModelPickerOpen] = useState(false);
   const [modelQuery, setModelQuery] = useState("");
   const [lastSelectedAgent, setLastSelectedAgent] = useState<AgentDef | null>(null);
+  const [slashOpen, setSlashOpen] = useState(false);
+  const [slashQuery, setSlashQuery] = useState("");
+  const [slashIndex, setSlashIndex] = useState(0);
+
+  const filteredSlash = useMemo(() => {
+    if (!slashCommands?.length) return [];
+    const q = slashQuery.toLowerCase().trim();
+    if (!q) return slashCommands;
+    return slashCommands.filter((c) => c.label.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
+  }, [slashCommands, slashQuery]);
+
+  useEffect(() => { setSlashIndex(0); }, [slashQuery, slashOpen]);
+
+  const triggerSlash = (id: string) => {
+    onSlashSelect?.(id);
+    onChange("");
+    setSlashOpen(false);
+    setSlashQuery("");
+  };
 
 
 
