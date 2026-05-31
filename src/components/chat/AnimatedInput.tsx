@@ -127,17 +127,25 @@ const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disable
   }, [value, items]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Escape" && (mentionOpen || modelPickerOpen)) {
+    if (e.key === "Escape" && (mentionOpen || modelPickerOpen || slashOpen)) {
       setMentionOpen(false);
       setModelPickerOpen(false);
+      setSlashOpen(false);
       return;
+    }
+    if (slashOpen && filteredSlash.length > 0) {
+      if (e.key === "ArrowDown") { e.preventDefault(); setSlashIndex((i) => (i + 1) % filteredSlash.length); return; }
+      if (e.key === "ArrowUp") { e.preventDefault(); setSlashIndex((i) => (i - 1 + filteredSlash.length) % filteredSlash.length); return; }
+      if (e.key === "Tab") { e.preventDefault(); triggerSlash(filteredSlash[slashIndex].id); return; }
     }
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
+      if (slashOpen && filteredSlash.length > 0) { triggerSlash(filteredSlash[slashIndex].id); return; }
       if (mentionOpen || modelPickerOpen) { setMentionOpen(false); setModelPickerOpen(false); return; }
       if (value.trim() && !disabled && !isLoading) onSend();
     }
   };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newVal = e.target.value;
