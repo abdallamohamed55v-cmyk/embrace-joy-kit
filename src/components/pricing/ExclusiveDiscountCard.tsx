@@ -24,6 +24,21 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
   const [now, setNow] = useState(() => Date.now());
   const [open, setOpen] = useState(false);
   const [deadline, setDeadline] = useState<number | null>(null);
+  const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
+  const [totalSlots, setTotalSlots] = useState<number>(50);
+
+  // Load today's spots
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase.rpc("get_today_promo_slots");
+      if (cancelled || error || !data || !data[0]) return;
+      setSpotsLeft(data[0].remaining);
+      setTotalSlots(data[0].total_slots);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
 
   // Resolve the deadline: prefer Supabase row for logged-in user, else localStorage, else create fresh.
   useEffect(() => {
@@ -129,16 +144,24 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
     setOpen(false);
   };
 
-  const handleClaim = () => {
+  const handleClaim = async () => {
     try {
       sessionStorage.setItem(SESSION_DISMISSED_KEY, "1");
     } catch {}
+    // Atomically claim a slot — real scarcity
+    const { data } = await supabase.rpc("claim_promo_slot");
+    if (typeof data === "number") {
+      setSpotsLeft(data === -1 ? 0 : data);
+    }
     setOpen(false);
     onClaim();
   };
 
   const remaining = deadline ? deadline - now : WINDOW_MS;
-  const expired = deadline !== null && remaining <= 0;
+  const timerExpired = deadline !== null && remaining <= 0;
+  const soldOut = spotsLeft !== null && spotsLeft <= 0;
+  const expired = timerExpired || soldOut;
+
 
   const perks = [
     "Unlimited AI chats",
@@ -207,19 +230,31 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             </div>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-8 grid grid-cols-2 gap-3">
             <div
-              className="bg-white border-2 border-black p-4 flex flex-col"
+              className="bg-white border-2 border-black p-3 flex flex-col"
               style={{ boxShadow: "4px 4px 0 0 #000" }}
             >
-              <span className="text-[11px] font-black uppercase text-black leading-none mb-2 tracking-wider">
-                Flash sale ends in
+              <span className="text-[10px] font-black uppercase text-black leading-none mb-2 tracking-wider">
+                Ends in
               </span>
-              <span className="text-3xl font-black tabular-nums tracking-tighter text-black leading-none font-mono">
-                {expired ? "00:00:00" : fmt(remaining)}
+              <span className="text-xl font-black tabular-nums tracking-tighter text-black leading-none font-mono">
+                {timerExpired ? "00:00:00" : fmt(remaining)}
+              </span>
+            </div>
+            <div
+              className="bg-black border-2 border-black p-3 flex flex-col"
+              style={{ boxShadow: "4px 4px 0 0 #FF4D00" }}
+            >
+              <span className="text-[10px] font-black uppercase text-[#FFD700] leading-none mb-2 tracking-wider">
+                Spots left today
+              </span>
+              <span className="text-xl font-black tabular-nums tracking-tighter text-white leading-none">
+                {spotsLeft === null ? "—" : `${spotsLeft}/${totalSlots}`}
               </span>
             </div>
           </div>
+
         </div>
 
         {/* ===== BOTTOM DARK ===== */}
@@ -255,8 +290,10 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             className="mt-9 w-full py-5 bg-[#FF4D00] text-white font-black text-lg border-2 border-black uppercase tracking-tight transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px]"
             style={{ boxShadow: "6px 6px 0 0 #000" }}
           >
-            {expired ? "Offer expired" : "Get 50% Discount"}
+            {soldOut ? "Sold out — back tomorrow" : timerExpired ? "Offer expired" : "Start saving now — $29"}
           </button>
+
+
         </div>
       </div>
     </div>
