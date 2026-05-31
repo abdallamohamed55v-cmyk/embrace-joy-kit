@@ -4129,7 +4129,7 @@ Ask me anything to get started!`;
               ))}
             </div>
           ) : messages.length === 0 ? (
-            <div className="absolute inset-0 flex items-center justify-center px-6 pb-40 md:pb-[190px]">
+            <div className="absolute inset-0 flex items-center justify-center px-6 pt-16 pb-20 md:pt-0 md:pb-[190px]">
               {/* Mobile: clean centered prompt — stable per chat open, accent word in a rotating color */}
               {(() => {
                 const name = userName?.split(" ")[0] || "friend";
