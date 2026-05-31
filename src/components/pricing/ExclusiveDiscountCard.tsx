@@ -144,16 +144,24 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
     setOpen(false);
   };
 
-  const handleClaim = () => {
+  const handleClaim = async () => {
     try {
       sessionStorage.setItem(SESSION_DISMISSED_KEY, "1");
     } catch {}
+    // Atomically claim a slot — real scarcity
+    const { data } = await supabase.rpc("claim_promo_slot");
+    if (typeof data === "number") {
+      setSpotsLeft(data === -1 ? 0 : data);
+    }
     setOpen(false);
     onClaim();
   };
 
   const remaining = deadline ? deadline - now : WINDOW_MS;
-  const expired = deadline !== null && remaining <= 0;
+  const timerExpired = deadline !== null && remaining <= 0;
+  const soldOut = spotsLeft !== null && spotsLeft <= 0;
+  const expired = timerExpired || soldOut;
+
 
   const perks = [
     "Unlimited AI chats",
