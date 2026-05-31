@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+  ResponsiveDialogDescription,
+} from "@/components/ui/responsive-dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const SESSION_DEADLINE_KEY = "megsy_promo_deadline_v1";
 const SESSION_DISMISSED_KEY = "megsy_promo_dismissed_v1";
 const WINDOW_MINUTES = 15;
-
 const baseClaimedToday = 2847;
 
 const formatTime = (ms: number) => {
@@ -39,7 +45,6 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
     return () => { cancelled = true; };
   }, []);
 
-  // Open as a popup shortly after mount, unless dismissed this session
   useEffect(() => {
     try {
       if (sessionStorage.getItem(SESSION_DISMISSED_KEY) === "1") return;
@@ -69,22 +74,11 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
     return () => window.clearInterval(id);
   }, [open]);
 
-  // Lock body scroll while modal is open
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
-  const handleClose = () => {
-    try { sessionStorage.setItem(SESSION_DISMISSED_KEY, "1"); } catch {}
-    setOpen(false);
+  const handleOpenChange = (next: boolean) => {
+    if (!next) {
+      try { sessionStorage.setItem(SESSION_DISMISSED_KEY, "1"); } catch {}
+    }
+    setOpen(next);
   };
 
   const handleClaim = () => {
@@ -96,177 +90,129 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
   const remaining = deadline - now;
   const expired = remaining <= 0;
   const pct = Math.max(0, Math.min(100, (remaining / (WINDOW_MINUTES * 60 * 1000)) * 100));
-
   const greeting = name ? `${name},` : "Hey there,";
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-y-auto overscroll-contain"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="exclusive-discount-title"
-        >
-          {/* Backdrop */}
-          <motion.div
-            className="fixed inset-0 bg-black/75 backdrop-blur-md"
-            onClick={handleClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
+    <ResponsiveDialog open={open} onOpenChange={handleOpenChange}>
+      <ResponsiveDialogContent
+        desktopClassName="!max-w-lg !p-0 !rounded-2xl border-amber-400/20 bg-[#0a0a14] text-white"
+      >
+        <VisuallyHidden>
+          <ResponsiveDialogTitle>Exclusive 50% discount</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
+            A personal offer reserved for your account.
+          </ResponsiveDialogDescription>
+        </VisuallyHidden>
 
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.97 }}
-            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-2xl my-auto"
-          >
-            {/* Soft glow */}
-            <div className="absolute inset-0 -z-10 blur-3xl opacity-60 bg-gradient-to-r from-amber-500/40 via-fuchsia-500/30 to-emerald-500/40 rounded-[32px]" />
+        <div className="relative bg-gradient-to-br from-[#0a0a14] via-[#13101f] to-[#0a0a14] text-white">
+          <style>{`
+            @keyframes ribbon-shine-modal {
+              0% { transform: translateX(-120%); }
+              100% { transform: translateX(220%); }
+            }
+          `}</style>
 
-            <div
-              className="relative overflow-hidden rounded-t-[24px] sm:rounded-[28px] p-[1.5px]"
-              style={{
-                background:
-                  "conic-gradient(from var(--angle,0deg), #FFD700, #ff5e9c, #7c3aed, #10b981, #FFD700)",
-                animation: "exclusive-spin 8s linear infinite",
-              }}
-            >
-              <style>{`
-                @keyframes exclusive-spin { to { --angle: 360deg; } }
-                @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-                @keyframes ribbon-shine {
-                  0% { transform: translateX(-120%); }
-                  100% { transform: translateX(220%); }
-                }
-              `}</style>
+          {/* Gradient hairline at top */}
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-400/80 to-transparent" />
 
-              <div className="relative rounded-t-[22px] sm:rounded-[26px] bg-gradient-to-br from-[#0a0a14] via-[#13101f] to-[#0a0a14] text-white p-5 sm:p-9 max-h-[100dvh] sm:max-h-[88dvh] overflow-y-auto">
+          {/* Ribbon */}
+          <div className="px-5 sm:px-7 pt-5">
+            <div className="relative inline-flex overflow-hidden px-3 py-1 rounded-md bg-gradient-to-b from-amber-400 to-amber-600 text-[10px] font-black tracking-[0.18em] text-black">
+              EXCLUSIVE · RESERVED FOR YOU
+              <span
+                className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent"
+                style={{ animation: "ribbon-shine-modal 2.6s ease-in-out infinite" }}
+              />
+            </div>
+          </div>
 
-                {/* Close */}
-                <button
-                  onClick={handleClose}
-                  aria-label="Close"
-                  className="absolute top-3 right-3 sm:top-4 sm:right-4 w-9 h-9 grid place-items-center rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-colors text-lg font-light"
-                >
-                  ×
-                </button>
+          {/* Title + copy */}
+          <div className="px-5 sm:px-7 pt-3 pb-2">
+            <h2 className="font-black leading-[1.1] text-[clamp(1.35rem,5vw,1.9rem)]">
+              {greeting} here's <span className="text-amber-400">50% OFF</span>
+              <br />
+              <span className="bg-gradient-to-r from-amber-300 via-fuchsia-400 to-emerald-300 bg-clip-text text-transparent">
+                reserved just for you
+              </span>
+            </h2>
+            <p className="mt-2 text-[12.5px] sm:text-sm text-white/70 leading-relaxed">
+              This isn't a public offer — it was opened for your account right now.
+              Leave and it goes back to others in line.
+            </p>
+          </div>
 
-                {/* Ribbon */}
-                <div className="absolute -top-1 left-6 sm:left-10 z-10">
-                  <div className="relative overflow-hidden px-4 py-1.5 rounded-b-xl bg-gradient-to-b from-amber-400 to-amber-600 text-[10px] sm:text-[11px] font-black tracking-[0.18em] text-black shadow-xl shadow-amber-900/40">
-                    EXCLUSIVE • RESERVED FOR YOU
-                    <span
-                      className="absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent"
-                      style={{ animation: "ribbon-shine 2.6s ease-in-out infinite" }}
-                    />
+          {/* Unlimited grid */}
+          <div className="px-5 sm:px-7">
+            <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+              {[
+                "Unlimited chats",
+                "Unlimited images",
+                "Unlimited slides",
+                "Unlimited docs",
+                "Unlimited Code",
+                "Megsy OS 24/7",
+              ].map((t) => (
+                <li key={t} className="flex items-center gap-1.5 text-[12px] font-semibold text-white/90">
+                  <span className="text-amber-300 font-black">∞</span>
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Save + countdown */}
+          <div className="px-5 sm:px-7 pt-4">
+            <div className="rounded-xl bg-white/[0.04] border border-white/10 p-4">
+              <div className="flex items-end justify-between gap-3 mb-3">
+                <div>
+                  <div className="text-[10px] text-white/50 uppercase tracking-wider mb-1">You save / year</div>
+                  <div className="font-black text-3xl text-amber-300 leading-none">$348</div>
+                  <div className="text-[10px] text-white/50 mt-1">
+                    Less than <span className="text-white font-bold">$0.79 / day</span>
                   </div>
                 </div>
-
-                <div className="pt-5">
-                  <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] font-bold tracking-wider mb-3 uppercase">
-                    Hand-picked from thousands of users
-                  </div>
-
-                  <h2
-                    id="exclusive-discount-title"
-                    className="font-black leading-[1.05] text-[clamp(1.4rem,4vw,2.4rem)] mb-2.5"
-                  >
-                    {greeting} here's <span className="text-amber-400">50% OFF</span>
-                    <br />
-                    <span className="bg-gradient-to-r from-amber-300 via-fuchsia-400 to-emerald-300 bg-clip-text text-transparent">
-                      reserved just for you
-                    </span>
-                  </h2>
-
-                  <p className="text-[13px] sm:text-base text-white/70 leading-relaxed mb-4">
-                    This isn't a public offer — it was opened for your account right now.
-                    Leave and it goes back to other users in line.
-                  </p>
-
-                  {/* Unlimited list — no icons */}
-                  <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 mb-4">
-                    {[
-                      "Unlimited chats",
-                      "Unlimited images",
-                      "Unlimited slides",
-                      "Unlimited docs",
-                      "Unlimited Code",
-                      "Megsy OS 24/7",
-                    ].map((t) => (
-                      <li
-                        key={t}
-                        className="flex items-center gap-1.5 text-[12px] sm:text-[13px] font-semibold text-white/90"
-                      >
-                        <span className="text-amber-300 font-black">∞</span>
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Save block */}
-                  <div className="rounded-2xl bg-white/[0.04] border border-white/10 p-4 sm:p-5 mb-4">
-                    <div className="flex items-end justify-between gap-3 mb-3">
-                      <div>
-                        <div className="text-[10px] text-white/50 uppercase tracking-wider mb-1">You save / year</div>
-                        <div className="font-black text-3xl sm:text-5xl text-amber-300 leading-none">$348</div>
-                        <div className="text-[10px] text-white/50 mt-1">
-                          Less than <span className="text-white font-bold">$0.79 / day</span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Ends in</div>
-                        <div className="font-mono font-black text-amber-300 text-xl sm:text-3xl">
-                          {expired ? "00:00" : formatTime(remaining)}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="h-1 rounded-full bg-white/10 overflow-hidden">
-                      <motion.div
-                        className="h-full bg-gradient-to-r from-amber-400 to-red-400"
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.4 }}
-                      />
-                    </div>
-                  </div>
-
-
-                  <button
-                    onClick={handleClaim}
-                    disabled={expired}
-                    className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-black font-black text-sm tracking-wide hover:scale-[1.01] active:scale-[0.99] transition-transform shadow-lg shadow-amber-500/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  >
-                    {expired ? "Offer expired" : "Claim my 50% — Pro $29/mo"}
-                  </button>
-
-                  <button
-                    onClick={handleClose}
-                    className="w-full mt-2 py-2 text-[11px] text-white/40 hover:text-white/70 transition-colors"
-                  >
-                    No thanks, I'll pay full price later
-                  </button>
-
-                  <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-white/50">
-                    <span>Cancel anytime · No commitment</span>
-                    <span>
-                      Joined by <span className="text-white font-bold">+{claimed.toLocaleString("en-US")}</span> this week
-                    </span>
+                <div className="text-right">
+                  <div className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Ends in</div>
+                  <div className="font-mono font-black text-amber-300 text-2xl tabular-nums">
+                    {expired ? "00:00" : formatTime(remaining)}
                   </div>
                 </div>
               </div>
+              <div className="h-1 rounded-full bg-white/10 overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-amber-400 to-red-400"
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 0.4 }}
+                />
+              </div>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </div>
+
+          {/* CTAs */}
+          <div className="px-5 sm:px-7 pt-4 pb-5">
+            <button
+              onClick={handleClaim}
+              disabled={expired}
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-black font-black text-sm tracking-wide active:scale-[0.99] transition-transform shadow-lg shadow-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {expired ? "Offer expired" : "Claim my 50% — Pro $29/mo"}
+            </button>
+            <button
+              onClick={() => handleOpenChange(false)}
+              className="w-full mt-1.5 py-2 text-[11px] text-white/45 hover:text-white/70 transition-colors"
+            >
+              No thanks, I'll pay full price later
+            </button>
+
+            <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between text-[10.5px] text-white/50">
+              <span>Cancel anytime · No commitment</span>
+              <span>
+                +<span className="text-white font-bold">{claimed.toLocaleString("en-US")}</span> this week
+              </span>
+            </div>
+          </div>
+        </div>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }
