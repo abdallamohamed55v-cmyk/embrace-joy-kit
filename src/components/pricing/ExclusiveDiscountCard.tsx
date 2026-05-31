@@ -184,34 +184,26 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             </h3>
           </div>
 
-          <div className="leading-[0.85]">
-            <h1
-              className="font-black tracking-[-0.05em] bg-clip-text text-transparent"
-              style={{
-                fontSize: "clamp(88px,28vw,118px)",
-                backgroundImage:
-                  "linear-gradient(180deg, #FFE177 0%, #E8B43A 45%, #B57A12 100%)",
-                WebkitTextStroke: "2px #000",
-                filter: "drop-shadow(0 4px 0 rgba(0,0,0,0.9))",
-              }}
-            >
-              50%
-            </h1>
-            <div className="flex items-end gap-3 -mt-3">
-              <h2
-                className="font-black text-black tracking-tighter"
-                style={{ fontSize: "clamp(56px,18vw,76px)" }}
+          <div className="leading-[0.9]">
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <h1
+                className="font-black tracking-[-0.05em]"
+                style={{
+                  fontSize: "clamp(72px,22vw,104px)",
+                  color: "#E8B43A",
+                  WebkitTextStroke: "2px #000",
+                }}
               >
-                OFF
-              </h2>
-              <div className="mb-3">
-                <span
-                  className="bg-[#FF4D00] text-white px-3 py-2 text-[11px] font-black uppercase block -rotate-2"
-                  style={{ boxShadow: "4px 4px 0 0 #000" }}
-                >
-                  Now or never
-                </span>
-              </div>
+                50% OFF
+              </h1>
+            </div>
+            <div className="mt-3">
+              <span
+                className="bg-[#FF4D00] text-white px-3 py-2 text-[11px] font-black uppercase inline-block -rotate-2"
+                style={{ boxShadow: "4px 4px 0 0 #000" }}
+              >
+                Now or never
+              </span>
             </div>
           </div>
 
