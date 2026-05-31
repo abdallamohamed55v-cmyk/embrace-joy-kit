@@ -350,9 +350,8 @@ const PricingPage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 items-stretch">
           {PLANS.map((p, i) => {
-            const fullPrice = isYearly ? p.yearlyPrice : p.monthlyPrice;
+            const price = isYearly ? p.yearlyPrice : p.monthlyPrice;
             const hasPromo = p.tier !== "starter";
-            const price = hasPromo ? Math.round(fullPrice / 2) : fullPrice;
             const credits = isYearly ? p.yearlyCredits : p.monthlyCredits;
             const isElite = p.tier === "elite";
 
