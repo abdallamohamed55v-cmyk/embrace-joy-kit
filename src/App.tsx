@@ -346,8 +346,8 @@ const App = () => {
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
 
                   {/* Public / marketing */}
-                  {/* Root shows marketing landing to visitors; LandingPage auto-redirects signed-in users to /chat */}
-                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/" element={<ChatPage key={currentUserId} />} />
+
                   <Route path="/landing" element={<LandingPage />} />
                   <Route path="/home" element={<LandingPage />} />
                   <Route path="/se" element={<SePage />} />
