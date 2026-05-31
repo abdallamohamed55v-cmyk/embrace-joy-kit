@@ -1153,6 +1153,35 @@ const ChatPage = () => {
     setPlusMenuOpen(false);
   };
 
+  // Unified service registry — used by slash menu (`/`) and the welcome-screen suggested cards.
+  const CHAT_SERVICES = useMemo(() => ([
+    { id: "megsy-os", label: "Megsy OS", description: "Autonomous multi-agent operator", Icon: Atom },
+    { id: "deep-research", label: "Deep Research", description: "In-depth web research report", Icon: Telescope },
+    { id: "code-nav", label: "Code", description: "Build & ship full apps", Icon: Layers, href: "/code" },
+    { id: "media-nav", label: "Media", description: "Images, video & audio studio", Icon: Images, href: "/media" },
+    { id: "slides", label: "Slides", description: "Generate a presentation", Icon: Presentation },
+    { id: "slides-images", label: "Slides with images", description: "Image-designed PDF deck", Icon: Projector },
+    { id: "learning", label: "Learning", description: "Tutor mode with study tools", Icon: GraduationCap },
+    { id: "docs", label: "Docs", description: "Write & edit documents", Icon: NotebookPen },
+  ]), []);
+
+  const triggerChatService = useCallback((id: string) => {
+    const svc = CHAT_SERVICES.find((s) => s.id === id);
+    if (!svc) return;
+    if ((svc as any).href) { navigate((svc as any).href); return; }
+    if (id === "docs") {
+      setChatMode("normal");
+      import("@/lib/agentRegistry").then(({ AGENTS }) => {
+        const def = AGENTS.find((x) => x.id === "docs");
+        if (def) setSelectedAgent(def);
+      });
+      return;
+    }
+    if (id === "megsy-os") { tryActivateMegsyOs(); return; }
+    handleModeChange(id as ChatMode);
+  }, [CHAT_SERVICES, navigate, tryActivateMegsyOs]);
+
+
   const handleSearchToggle = () => {
     setSearchEnabled(!searchEnabled);
     if (!searchEnabled) setChatMode("normal");
@@ -4165,59 +4194,64 @@ Ask me anything to get started!`;
                 ];
                 const color = ACCENT_COLORS[mobileGreetingColor % ACCENT_COLORS.length];
                 const phrase = RETURNING_GREETINGS[0];
-                const ServiceChips = (
-                  <div className="flex flex-wrap items-center justify-center gap-1.5 mt-5 px-1 max-w-xl mx-auto">
-                    {([
-                      { id: "megsy-os" as const, label: "Megsy OS", Icon: Atom },
-                      { id: "deep-research" as const, label: "Deep Research", Icon: Telescope },
-                      { id: "code-nav" as const, label: "Code", Icon: Layers, href: "/code" },
-                      { id: "media-nav" as const, label: "Media", Icon: Images, href: "/media" },
-                      { id: "slides" as const, label: "Slides", Icon: Presentation },
-                      { id: "slides-images" as const, label: "Slides with images", Icon: Projector },
-                      { id: "learning" as const, label: "Learning", Icon: GraduationCap },
-                      { id: "docs" as const, label: "Docs", Icon: NotebookPen },
-                    ]).map((a) => {
-                      const active =
-                        a.id === "docs" ? selectedAgent?.id === "docs" :
-                        a.id === "megsy-os" ? chatMode === "operator" :
-                        (a as any).href ? false :
-                        chatMode === a.id;
-                      return (
-                        <button
-                          key={a.id}
-                          type="button"
-                          onClick={() => {
-                            if ((a as any).href) { navigate((a as any).href); return; }
-                            if (a.id === "docs") {
-                              if (active) { setSelectedAgent(null); }
-                              else {
-                                setChatMode("normal");
-                                import("@/lib/agentRegistry").then(({ AGENTS }) => {
-                                  const def = AGENTS.find((x) => x.id === "docs");
-                                  if (def) setSelectedAgent(def);
-                                });
-                              }
-                            } else if (a.id === "megsy-os") {
-                              if (active) handleModeChange("normal");
-                              else tryActivateMegsyOs();
-                            } else {
-                              handleModeChange(active ? "normal" : (a.id as ChatMode));
-                            }
-                          }}
-                          className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full border text-[12px] font-medium shrink-0 transition-colors ${
-                            active
-                              ? "border-primary/60 bg-primary/10 text-primary"
-                              : "border-border/60 bg-background/40 backdrop-blur text-foreground/75 hover:text-foreground hover:bg-foreground/[0.05]"
-                          }`}
-                        >
-                          <a.Icon className="w-3.5 h-3.5" strokeWidth={2} />
-                          <span>{a.label}</span>
-                        </button>
-                      );
-                    })}
+                const SERVICES = [
+                  { id: "megsy-os", label: "Megsy OS", description: "Autonomous multi-agent operator", Icon: Atom },
+                  { id: "deep-research", label: "Deep Research", description: "In-depth web research report", Icon: Telescope },
+                  { id: "code-nav", label: "Code", description: "Build & ship full apps", Icon: Layers, href: "/code" },
+                  { id: "media-nav", label: "Media", description: "Images, video & audio studio", Icon: Images, href: "/media" },
+                  { id: "slides", label: "Slides", description: "Generate a presentation", Icon: Presentation },
+                  { id: "slides-images", label: "Slides with images", description: "Image-designed PDF deck", Icon: Projector },
+                  { id: "learning", label: "Learning", description: "Tutor mode with study tools", Icon: GraduationCap },
+                  { id: "docs", label: "Docs", description: "Write & edit documents", Icon: NotebookPen },
+                ] as const;
 
-                  </div>
+                const triggerService = (id: string) => {
+                  const svc = SERVICES.find((s) => s.id === id);
+                  if (!svc) return;
+                  if ((svc as any).href) { navigate((svc as any).href); return; }
+                  if (id === "docs") {
+                    setChatMode("normal");
+                    import("@/lib/agentRegistry").then(({ AGENTS }) => {
+                      const def = AGENTS.find((x) => x.id === "docs");
+                      if (def) setSelectedAgent(def);
+                    });
+                    return;
+                  }
+                  if (id === "megsy-os") { tryActivateMegsyOs(); return; }
+                  handleModeChange(id as ChatMode);
+                };
+
+                // Suggested prompt cards (4) — replaces the old chip row
+                const SUGGESTED = [
+                  { id: "deep-research", label: "Research a topic deeply", Icon: Telescope, tint: "text-sky-500" },
+                  { id: "slides", label: "Make me a presentation", Icon: Presentation, tint: "text-amber-500" },
+                  { id: "code-nav", label: "Build a web app", Icon: Layers, tint: "text-violet-500" },
+                  { id: "media-nav", label: "Create images or video", Icon: Images, tint: "text-rose-500" },
+                ];
+
+                const ServiceChips = (
+                  <>
+                    <div className="grid grid-cols-2 gap-2 mt-5 px-2 max-w-xl mx-auto w-full">
+                      {SUGGESTED.map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() => triggerService(s.id)}
+                          className="group flex items-center gap-2.5 px-3 py-2.5 rounded-2xl border border-border/60 bg-background/40 backdrop-blur hover:bg-foreground/[0.04] hover:border-border transition-all text-left active:scale-[0.98]"
+                        >
+                          <span className={`shrink-0 w-8 h-8 rounded-xl bg-foreground/[0.05] flex items-center justify-center ${s.tint}`}>
+                            <s.Icon className="w-4 h-4" strokeWidth={2} />
+                          </span>
+                          <span className="text-[12.5px] font-medium text-foreground/85 leading-tight">{s.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="mt-3 text-[11px] text-muted-foreground/70 text-center">
+                      Type <kbd className="px-1.5 py-0.5 rounded-md bg-foreground/[0.06] border border-border/60 text-[10px] font-mono">/</kbd> in the chat to see all services
+                    </p>
+                  </>
                 );
+
                 return (
                   <div className="w-full flex flex-col items-center">
                     <motion.div
