@@ -246,6 +246,10 @@ const ImageStudioPage = () => {
       if (data?.error) throw new Error(data.error);
       const urls: string[] = data?.image_urls ?? (data?.image_url ? [data.image_url] : []);
       setMessages(prev => prev.map(m => m.id === assistantMsg.id ? { ...m, images: urls } : m));
+      if (urls.length) {
+        const { triggerAha } = await import("@/lib/ahaTracker");
+        triggerAha("image");
+      }
     } catch (err: any) {
       const msg = err?.message || "Generation failed";
       setMessages(prev => prev.map(m => m.id === assistantMsg.id ? { ...m, content: msg } : m));
