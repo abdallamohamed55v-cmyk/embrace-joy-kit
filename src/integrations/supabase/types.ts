@@ -1410,6 +1410,30 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_promo_slots: {
+        Row: {
+          claimed_count: number
+          created_at: string
+          date: string
+          total_slots: number
+          updated_at: string
+        }
+        Insert: {
+          claimed_count?: number
+          created_at?: string
+          date?: string
+          total_slots?: number
+          updated_at?: string
+        }
+        Update: {
+          claimed_count?: number
+          created_at?: string
+          date?: string
+          total_slots?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       deapi_keys: {
         Row: {
           api_key: string
@@ -6621,6 +6645,7 @@ export type Database = {
         }
         Returns: Json
       }
+      claim_promo_slot: { Args: never; Returns: number }
       cleanup_old_research_reports: { Args: never; Returns: undefined }
       cleanup_rate_limits: { Args: never; Returns: undefined }
       create_notification: {
@@ -6664,6 +6689,15 @@ export type Database = {
         Returns: Json
       }
       get_invite_details: { Args: { p_token: string }; Returns: Json }
+      get_today_promo_slots: {
+        Args: never
+        Returns: {
+          claimed_count: number
+          date: string
+          remaining: number
+          total_slots: number
+        }[]
+      }
       has_unlimited_plan: { Args: { p_user_id: string }; Returns: boolean }
       is_conversation_member: {
         Args: { p_conversation_id: string; p_user_id: string }

@@ -24,6 +24,21 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
   const [now, setNow] = useState(() => Date.now());
   const [open, setOpen] = useState(false);
   const [deadline, setDeadline] = useState<number | null>(null);
+  const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
+  const [totalSlots, setTotalSlots] = useState<number>(50);
+
+  // Load today's spots
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase.rpc("get_today_promo_slots");
+      if (cancelled || error || !data || !data[0]) return;
+      setSpotsLeft(data[0].remaining);
+      setTotalSlots(data[0].total_slots);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
 
   // Resolve the deadline: prefer Supabase row for logged-in user, else localStorage, else create fresh.
   useEffect(() => {
