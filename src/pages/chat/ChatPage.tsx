@@ -4170,6 +4170,8 @@ Ask me anything to get started!`;
                     {([
                       { id: "megsy-os" as const, label: "Megsy OS", Icon: Atom },
                       { id: "deep-research" as const, label: "Deep Research", Icon: Telescope },
+                      { id: "code-nav" as const, label: "Code", Icon: Layers, href: "/code" },
+                      { id: "media-nav" as const, label: "Media", Icon: Images, href: "/media" },
                       { id: "slides" as const, label: "Slides", Icon: Presentation },
                       { id: "slides-images" as const, label: "Slides with images", Icon: Projector },
                       { id: "learning" as const, label: "Learning", Icon: GraduationCap },
@@ -4178,12 +4180,14 @@ Ask me anything to get started!`;
                       const active =
                         a.id === "docs" ? selectedAgent?.id === "docs" :
                         a.id === "megsy-os" ? chatMode === "operator" :
+                        (a as any).href ? false :
                         chatMode === a.id;
                       return (
                         <button
                           key={a.id}
                           type="button"
                           onClick={() => {
+                            if ((a as any).href) { navigate((a as any).href); return; }
                             if (a.id === "docs") {
                               if (active) { setSelectedAgent(null); }
                               else {
@@ -4211,6 +4215,7 @@ Ask me anything to get started!`;
                         </button>
                       );
                     })}
+
                   </div>
                 );
                 return (
