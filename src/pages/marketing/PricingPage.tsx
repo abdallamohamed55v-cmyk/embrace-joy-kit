@@ -287,9 +287,9 @@ const PricingPage = () => {
 
       {/* Welcome promo banner — 50% off on Pro and above */}
       <div className="px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/15 via-fuchsia-500/10 to-amber-500/15 px-4 sm:px-6 py-3 sm:py-3.5 flex flex-wrap items-center justify-center gap-2 text-center">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-black tracking-widest">
-            WELCOME50
+        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/15 via-primary/10 to-amber-500/15 px-4 sm:px-6 py-3 sm:py-3.5 flex flex-wrap items-center justify-center gap-2 text-center">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-[11px] font-black tracking-widest">
+            -50%
           </span>
           <span className="text-sm sm:text-base font-bold">
             خصم 50% على جميع الباقات من <span className="text-primary">Pro</span> فما فوق
