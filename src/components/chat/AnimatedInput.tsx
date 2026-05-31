@@ -38,8 +38,12 @@ interface AnimatedInputProps {
 }
 
 const DEFAULT_PLACEHOLDERS = [
-  "Ask Megsy",
+  "اسأل Megsy عن أي حاجة…",
+  "ابدأ مشروعك بفكرة واحدة…",
+  "صمّم، اكتب، ابحث — كله من هنا",
+  "اكتب سؤالك وخليني أساعدك",
 ];
+
 
 const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disabled, isLoading, placeholders, pendingQuestions, onQuestionAnswer, onQuestionSkip, activeAgent, onAgentSelect, onAgentRemove, mentionCategories, selectedModel, onModelSelect, onModelRemove, accentMode, headerSlot, inlineSlot }: AnimatedInputProps) => {
   const deferredValue = useDeferredValue(value);
