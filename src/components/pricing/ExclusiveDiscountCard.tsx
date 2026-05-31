@@ -1,15 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { X } from "lucide-react";
 import MegsyStar from "@/components/files/MegsyStar";
 
 const SESSION_DEADLINE_KEY = "megsy_promo_deadline_v1";
 const SESSION_DISMISSED_KEY = "megsy_promo_dismissed_v1";
-const WINDOW_MINUTES = 15;
+const WINDOW_MINUTES = 60 * 24; // 24h flash sale
 
 const fmt = (ms: number) => {
   const t = Math.max(0, Math.floor(ms / 1000));
-  return `${String(Math.floor(t / 60)).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
+  const h = Math.floor(t / 3600);
+  const m = Math.floor((t % 3600) / 60);
+  const s = t % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 };
 
 interface Props {
@@ -17,7 +19,7 @@ interface Props {
 }
 
 export default function ExclusiveDiscountCard({ onClaim }: Props) {
-  const [name, setName] = useState("");
+  const [, setName] = useState("");
   const [now, setNow] = useState(() => Date.now());
   const [open, setOpen] = useState(false);
 
@@ -101,10 +103,9 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
 
   const remaining = deadline - now;
   const expired = remaining <= 0;
-  const greet = name || "you";
 
   const perks = [
-    "Unlimited chats — every model",
+    "Unlimited AI chats",
     "Unlimited image generation",
     "Unlimited slides & docs",
     "Code Builder — no limits",
@@ -117,171 +118,124 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
       role="dialog"
       aria-modal="true"
       aria-label="Megsy Pro exclusive offer"
-      className="fixed inset-0 z-[100] flex flex-col overflow-y-auto"
-      style={{
-        background:
-          "radial-gradient(120% 80% at 50% 0%, #1a1410 0%, #08070a 55%, #000 100%)",
-        color: "#fff",
-      }}
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4 sm:p-6 font-sans"
+      style={{ background: "#FF4D00" }}
     >
       {/* Close */}
       <button
         onClick={close}
         aria-label="Close"
-        className="absolute top-4 right-4 z-20 w-10 h-10 grid place-items-center rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-white/70 hover:text-white backdrop-blur transition-colors"
+        className="absolute top-5 right-5 z-20 text-white/90 hover:text-white font-black text-xs uppercase tracking-[0.2em] border-b-2 border-white/40 hover:border-white pb-1 transition-colors"
       >
-        <X className="w-4 h-4" />
+        Close
       </button>
 
-      {/* ================= HERO ================= */}
-      <section className="relative px-6 pt-16 pb-10 flex flex-col items-center text-center">
-        {/* Ambient glow */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[460px]"
-          style={{
-            background:
-              "radial-gradient(60% 70% at 50% 30%, rgba(245,180,90,0.28) 0%, rgba(245,180,90,0.05) 45%, transparent 75%)",
-          }}
-        />
+      <div
+        className="relative w-full max-w-[380px] bg-[#FFFBF0] rounded-[40px] overflow-hidden flex flex-col border-4 border-black my-auto"
+        style={{ boxShadow: "0 40px 80px -15px rgba(0,0,0,0.5)" }}
+      >
+        {/* ===== TOP CREAM ===== */}
+        <div className="pt-10 px-7 pb-10 z-10">
+          <div className="mb-5">
+            <div className="inline-block bg-black text-white px-3 py-1 rounded-sm mb-2">
+              <span className="uppercase font-black text-[10px] tracking-[0.3em]">
+                Premium Access
+              </span>
+            </div>
+            <h3 className="uppercase font-black text-2xl tracking-tighter text-[#FF4D00]">
+              Megsy Pro
+            </h3>
+          </div>
 
-        {/* Brand sparkle */}
-        <div className="relative">
-          <div
-            aria-hidden
-            className="absolute inset-0 -m-6 rounded-full blur-2xl"
-            style={{ background: "radial-gradient(circle, rgba(250,200,120,0.55), transparent 70%)" }}
-          />
-          <div className="relative text-amber-300">
-            <MegsyStar size={56} />
+          <div className="leading-[0.85]">
+            <h1
+              className="font-black text-black tracking-[-0.05em]"
+              style={{ fontSize: "clamp(88px,28vw,118px)" }}
+            >
+              50%
+            </h1>
+            <div className="flex items-end gap-3 -mt-3">
+              <h2
+                className="font-black text-black tracking-tighter"
+                style={{ fontSize: "clamp(56px,18vw,76px)" }}
+              >
+                OFF
+              </h2>
+              <div className="mb-3">
+                <span
+                  className="bg-[#FF4D00] text-white px-3 py-2 text-[11px] font-black uppercase block -rotate-2"
+                  style={{ boxShadow: "4px 4px 0 0 #000" }}
+                >
+                  Now or never
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <div
+              className="bg-white border-2 border-black p-4 flex flex-col"
+              style={{ boxShadow: "4px 4px 0 0 #000" }}
+            >
+              <span className="text-[10px] font-black uppercase text-black/40 leading-none mb-1.5 tracking-wider">
+                Flash sale ends in
+              </span>
+              <span className="text-3xl font-black tabular-nums tracking-tighter text-black leading-none font-mono">
+                {expired ? "00:00:00" : fmt(remaining)}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Eyebrow */}
-        <div className="relative mt-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
-          <span className="text-[10px] font-bold tracking-[0.24em] uppercase text-white/80">
-            Personal offer · {greet}
-          </span>
-        </div>
-
-        {/* Hero number */}
-        <div className="relative mt-8 flex items-start justify-center">
-          <span
-            className="font-black leading-[0.85] tracking-tighter bg-clip-text text-transparent"
-            style={{
-              fontSize: "clamp(140px, 42vw, 220px)",
-              letterSpacing: "-0.08em",
-              backgroundImage:
-                "linear-gradient(180deg, #FFE9B8 0%, #F5B45A 55%, #C97A18 100%)",
-              filter: "drop-shadow(0 12px 40px rgba(245,180,90,0.35))",
-            }}
-          >
-            50
-          </span>
-          <span
-            className="font-black text-amber-200 leading-none mt-3"
-            style={{ fontSize: "clamp(48px, 14vw, 80px)" }}
-          >
-            %
-          </span>
-        </div>
-
-        <h1 className="relative mt-2 text-white font-black tracking-tight text-[22px] sm:text-[26px]">
-          off your first month
-        </h1>
-        <p className="relative mt-2 text-[13px] text-white/55 max-w-xs">
-          A one-time invitation to Megsy Pro — not a public promo.
-        </p>
-
-        {/* Countdown */}
-        <div className="relative mt-7 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-black/40 border border-white/10 backdrop-blur">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-          <span className="text-[10px] tracking-[0.2em] uppercase text-white/55">
-            Expires in
-          </span>
-          <span className="text-[14px] font-bold font-mono tabular-nums text-white">
-            {expired ? "00:00" : fmt(remaining)}
-          </span>
-        </div>
-      </section>
-
-      {/* ================= PERKS ================= */}
-      <section className="px-6 pb-8 max-w-md w-full mx-auto">
-        <div className="rounded-3xl bg-white/[0.03] border border-white/[0.08] p-5 backdrop-blur">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-amber-300">
-              <MegsyStar size={14} static />
-            </span>
-            <span className="text-[10px] font-bold tracking-[0.22em] uppercase text-white/55">
-              What you unlock
-            </span>
+        {/* ===== BOTTOM DARK ===== */}
+        <div className="relative flex-1 bg-[#0F0F0F] p-7 pt-10 border-t-4 border-black">
+          {/* Bonus badge */}
+          <div className="absolute top-0 left-7 -translate-y-1/2">
+            <div
+              className="bg-[#FFD700] px-5 py-2.5 border-2 border-black flex items-center gap-2"
+              style={{ boxShadow: "4px 4px 0 0 #000" }}
+            >
+              <span className="text-black">
+                <MegsyStar size={14} static />
+              </span>
+              <span className="font-black text-black text-[11px] uppercase tracking-tight">
+                +3 Months Free Credits
+              </span>
+            </div>
           </div>
-          <ul className="space-y-3.5">
-            {perks.map((label) => (
-              <li key={label} className="flex items-start gap-3">
-                <span className="mt-[3px] text-amber-300 shrink-0">
+
+          <ul className="mt-4 space-y-5">
+            {perks.map((p) => (
+              <li key={p} className="flex items-center gap-3 text-white">
+                <span className="text-[#FF4D00] shrink-0">
                   <MegsyStar size={14} static />
                 </span>
-                <span className="text-[14.5px] text-white/90 font-medium leading-snug">
-                  {label}
+                <span className="font-bold text-[15px] leading-none tracking-tight">
+                  {p}
                 </span>
               </li>
             ))}
           </ul>
-        </div>
 
-        {/* Price */}
-        <div className="mt-7 text-center">
-          <div className="flex items-baseline justify-center gap-2.5">
-            <span className="text-[16px] text-white/35 line-through font-medium">
-              $58
-            </span>
-            <span
-              className="font-black tracking-tighter leading-none bg-clip-text text-transparent"
-              style={{
-                fontSize: "clamp(48px, 14vw, 64px)",
-                backgroundImage:
-                  "linear-gradient(180deg, #fff 0%, #d8d8d8 100%)",
-              }}
-            >
-              $29
-            </span>
-            <span className="text-[13px] text-white/45 font-medium">/mo</span>
-          </div>
-          <p className="mt-1.5 text-[11px] text-white/35 tracking-wide">
-            Then $58/mo · cancel anytime
-          </p>
-        </div>
-      </section>
-
-      {/* ================= CTA ================= */}
-      <section className="sticky bottom-0 mt-auto px-6 pb-[max(20px,env(safe-area-inset-bottom))] pt-6 bg-gradient-to-t from-black via-black/90 to-transparent">
-        <div className="max-w-md mx-auto">
           <button
             onClick={handleClaim}
             disabled={expired}
-            className="group relative w-full py-4 rounded-2xl text-black font-bold text-[15px] tracking-tight active:scale-[0.99] transition-transform disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden"
-            style={{
-              background:
-                "linear-gradient(180deg, #FFE082 0%, #F5B45A 50%, #E89A2A 100%)",
-              boxShadow:
-                "0 20px 50px -12px rgba(245,180,90,0.6), inset 0 1px 0 rgba(255,255,255,0.5)",
-            }}
+            className="mt-9 w-full py-5 bg-[#FF4D00] text-white font-black text-lg border-2 border-black uppercase tracking-tight transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px]"
+            style={{ boxShadow: "6px 6px 0 0 #000" }}
           >
-            <span className="relative inline-flex items-center justify-center gap-2">
-              <MegsyStar size={14} static />
-              {expired ? "Offer expired" : "Claim my 50% off"}
+            <span className="inline-flex items-center justify-center gap-2">
+              <MegsyStar size={16} static />
+              {expired ? "Offer expired" : "Get 50% Discount"}
             </span>
           </button>
-          <button
-            onClick={close}
-            className="w-full mt-2 py-3 text-[12px] text-white/40 hover:text-white/70 transition-colors"
-          >
-            Maybe later
-          </button>
+
+          <div className="mt-6 flex justify-center">
+            <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] border-t border-white/10 pt-4 w-full text-center">
+              Secure checkout • Cancel anytime
+            </p>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
