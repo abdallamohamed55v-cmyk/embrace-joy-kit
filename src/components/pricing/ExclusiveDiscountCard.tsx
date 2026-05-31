@@ -88,50 +88,83 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
           <ResponsiveDialogDescription>Personal offer reserved for your account.</ResponsiveDialogDescription>
         </div>
 
-        <div className="relative bg-[#0b0b0f] text-white overflow-hidden rounded-t-[28px] sm:rounded-[28px]">
-          {/* Top gold accent */}
-          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
-          {/* Ambient amber glow */}
-          <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[420px] h-[420px] rounded-full bg-amber-500/15 blur-[100px]" />
+        <div className="relative bg-[#0a0a0e] text-white overflow-hidden rounded-t-[28px] sm:rounded-[28px] border border-amber-400/15">
+          {/* Premium gold header band */}
+          <div className="relative h-[78px] overflow-hidden">
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(120% 100% at 50% 0%, rgba(251,191,36,0.45) 0%, rgba(180,83,9,0.25) 45%, rgba(10,10,14,0) 75%)",
+              }}
+            />
+            {/* shimmer diagonal */}
+            <div
+              className="absolute inset-0 opacity-60"
+              style={{
+                background:
+                  "linear-gradient(115deg, transparent 30%, rgba(255,215,0,0.22) 50%, transparent 70%)",
+                animation: "header-shine 4s ease-in-out infinite",
+              }}
+            />
+            {/* gold hairline at bottom of band */}
+            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-amber-400/70 to-transparent" />
+
+            {/* eyebrow centered in band */}
+            <div className="relative h-full flex items-center justify-center">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/40 border border-amber-300/30 backdrop-blur-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-300 shadow-[0_0_8px_rgba(251,191,36,0.9)]" />
+                <span className="text-[10px] font-bold tracking-[0.28em] text-amber-200 uppercase">
+                  Exclusive · Personal Offer
+                </span>
+              </div>
+            </div>
+          </div>
 
           <style>{`
             @keyframes shimmer-line {
               0% { transform: translateX(-100%); }
               100% { transform: translateX(100%); }
             }
+            @keyframes header-shine {
+              0%, 100% { transform: translateX(-15%); }
+              50% { transform: translateX(15%); }
+            }
           `}</style>
 
-          <div className="relative px-7 pt-9 pb-7 text-center">
-            {/* tiny eyebrow */}
-            <div className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.28em] text-amber-300/80 uppercase mb-7">
-              <span className="h-px w-6 bg-amber-300/40" />
-              Personal Offer
-              <span className="h-px w-6 bg-amber-300/40" />
-            </div>
-
+          <div className="relative px-7 pt-8 pb-7 text-center">
             {/* Hero number */}
-            <div className="relative inline-block">
+            <div className="relative inline-flex items-start">
               <div
-                className="font-black leading-none tracking-tighter bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent"
-                style={{ fontSize: "clamp(5.5rem, 22vw, 8rem)", letterSpacing: "-0.06em" }}
+                className="font-black leading-none tracking-tighter bg-gradient-to-b from-amber-100 via-amber-300 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_4px_24px_rgba(251,191,36,0.25)]"
+                style={{ fontSize: "clamp(5rem, 20vw, 7rem)", letterSpacing: "-0.06em" }}
               >
-                50%
+                50
               </div>
-              <div className="absolute -right-1 top-2 text-[10px] font-bold tracking-[0.2em] text-amber-300/90 rotate-[8deg]">
-                OFF
+              <div className="flex flex-col items-start ml-1 mt-2">
+                <span
+                  className="font-black leading-none bg-gradient-to-b from-amber-100 via-amber-300 to-amber-600 bg-clip-text text-transparent"
+                  style={{ fontSize: "clamp(2rem, 8vw, 2.75rem)" }}
+                >
+                  %
+                </span>
+                <span className="text-[10px] font-black tracking-[0.25em] text-amber-300/90 mt-1.5">
+                  OFF
+                </span>
               </div>
             </div>
 
             <h2
-              className="mt-4 font-medium text-white/95 leading-tight"
-              style={{ fontSize: "clamp(1.05rem, 4vw, 1.25rem)", letterSpacing: "-0.01em" }}
+              className="mt-3 font-medium text-white/95 leading-tight"
+              style={{ fontSize: "clamp(1rem, 3.8vw, 1.2rem)", letterSpacing: "-0.01em" }}
             >
               Reserved for <span className="text-amber-300 font-semibold">{greet}</span>
             </h2>
 
-            <p className="mt-2 text-[12.5px] text-white/45 leading-relaxed max-w-[280px] mx-auto">
-              Not a public promo. Opened for your account only.
+            <p className="mt-1.5 text-[12px] text-white/45 leading-relaxed max-w-[270px] mx-auto">
+              Not a public promo · opened for your account only
             </p>
+
 
             {/* Subtle divider */}
             <div className="mt-7 mb-6 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
