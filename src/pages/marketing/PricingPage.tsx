@@ -12,6 +12,7 @@ import SEOHead from "@/components/common/SEOHead";
 import { UnlimitedModelsButton } from "@/components/branding/UnlimitedModelsButton";
 import { PaymentMethods } from "@/components/branding/PaymentMethods";
 import { DodoPaymentsBadge } from "@/components/branding/DodoPaymentsBadge";
+import ExclusiveDiscountCard from "@/components/pricing/ExclusiveDiscountCard";
 
 type PlanTier = "starter" | "pro" | "elite" | "business";
 
@@ -41,7 +42,7 @@ const PLANS: PlanCardConfig[] = [
   {
     tier: "starter",
     name: "Starter",
-    label: "BEST FOR BEGINNERS",
+    label: "FOR EXPLORERS",
     bg: "#D1FAE5",
     text: "#1A1A1A",
     subText: "rgba(26,26,26,0.65)",
@@ -50,13 +51,13 @@ const PLANS: PlanCardConfig[] = [
     monthlyCredits: "70 MC / month",
     yearlyCredits: "840 MC / year",
     features: [
-      "Unlimited chat — all models",
-      "Megsy Pro & Max included",
-      "Image generation (credit-based)",
-      "Code builder (credit-based)",
-      "Slides, Docs & Deep Research (credit-based)",
-      "Deploy & publish",
-      "24/7 support",
+      "Unlimited chat — basic models",
+      "70 credits for images, slides, docs",
+      "Code builder — credit-based",
+      "Video generation — credit-based",
+      "Basic deploy & publish",
+      "Community support",
+      "Daily usage caps apply",
     ],
     ctaBg: "#000000",
     ctaText: "#FFFFFF",
@@ -66,24 +67,26 @@ const PLANS: PlanCardConfig[] = [
   {
     tier: "pro",
     name: "Pro",
-    label: "PROFESSIONAL CHOICE",
+    label: "MOST CHOSEN BY CREATORS",
     bg: "#2563EB",
     text: "#FFFFFF",
-    subText: "rgba(255,255,255,0.75)",
+    subText: "rgba(255,255,255,0.78)",
     monthlyPrice: 29,
     yearlyPrice: 299,
-    monthlyCredits: "240 MC / month",
-    yearlyCredits: "2,880 MC / year",
+    monthlyCredits: "Unlimited usage • no caps",
+    yearlyCredits: "Unlimited yearly • no caps",
     features: [
-      "Unlimited chat — all models",
-      "Megsy OS — autonomous 24/7 agent",
+      "Unlimited chat — every premium model",
       "Unlimited image generation",
-      "Unlimited Slides, Docs & Deep Research",
+      "Unlimited slides & presentations",
+      "Unlimited docs & deep research",
       "Unlimited Code builder",
+      "Megsy OS — autonomous 24/7 agent",
       "Video generation (credit-based)",
       "Team workspace included",
       "API access",
-      "24/7 support",
+      "Priority email support",
+      "No daily limits, no waiting queue",
     ],
     ctaBg: "#FFFFFF",
     ctaText: "#2563EB",
@@ -96,19 +99,20 @@ const PLANS: PlanCardConfig[] = [
     label: "MOST POPULAR",
     bg: "#7C3AED",
     text: "#FFFFFF",
-    subText: "rgba(255,255,255,0.78)",
+    subText: "rgba(255,255,255,0.82)",
     monthlyPrice: 59,
     yearlyPrice: 599,
-    monthlyCredits: "500 MC / month",
-    yearlyCredits: "6,000 MC / year",
+    monthlyCredits: "Unlimited everything • priority",
+    yearlyCredits: "Unlimited yearly • priority queue",
     features: [
-      "Everything in Pro",
-      "Unlimited images — priority queue",
-      "Unlimited Code builder — priority",
+      "Everything in Pro — unlimited",
+      "Unlimited video generation (premium)",
+      "Priority queue — 3× faster generations",
       "Advanced presets & custom branding",
       "API + webhooks",
       "Analytics dashboard",
-      "24/7 support",
+      "Early access to new models",
+      "24/7 priority chat support",
     ],
     ctaBg: "#FFD700",
     ctaText: "#000000",
@@ -120,20 +124,23 @@ const PLANS: PlanCardConfig[] = [
   {
     tier: "business",
     name: "Business",
-    label: "BEST VALUE",
+    label: "FOR TEAMS WHO SCALE",
     bg: "#D97706",
     text: "#FFFFFF",
-    subText: "rgba(255,255,255,0.78)",
+    subText: "rgba(255,255,255,0.82)",
     monthlyPrice: 149,
     yearlyPrice: 1599,
-    monthlyCredits: "1,200 MC / month",
-    yearlyCredits: "14,400 MC / year",
+    monthlyCredits: "Unlimited everything • dedicated",
+    yearlyCredits: "Unlimited yearly • dedicated infrastructure",
     features: [
-      "Everything in Elite",
+      "Everything in Elite — unlimited",
+      "Unlimited team seats",
       "Dedicated infrastructure",
-      "SSO & role management",
-      "Advanced security & SLA guarantee",
-      "24/7 support",
+      "SSO & SAML authentication",
+      "99.9% SLA guarantee",
+      "Custom contracts & invoicing",
+      "White-glove onboarding",
+      "Dedicated success manager",
     ],
     ctaBg: "#FFFFFF",
     ctaText: "#D97706",
@@ -285,17 +292,14 @@ const PricingPage = () => {
         <h1 className="text-base font-bold tracking-tight">Pricing</h1>
       </div>
 
-      {/* Welcome promo banner — 50% off on Pro and above */}
-      <div className="px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/15 via-primary/10 to-amber-500/15 px-4 sm:px-6 py-3 sm:py-3.5 flex flex-wrap items-center justify-center gap-2 text-center">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-[11px] font-black tracking-widest">
-            -50%
-          </span>
-          <span className="text-sm sm:text-base font-bold">
-            خصم 50% على جميع الباقات من <span className="text-primary">Pro</span> فما فوق
-          </span>
-          <span className="text-xs sm:text-sm text-muted-foreground">— لفترة محدودة</span>
-        </div>
+      {/* Exclusive personal discount card — 50% off + Unlimited */}
+      <div className="px-4 sm:px-6 max-w-7xl mx-auto mt-2 mb-2">
+        <ExclusiveDiscountCard
+          onClaim={() => {
+            const el = document.getElementById("plans-grid");
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+        />
       </div>
 
       <section className="max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-14 pb-10 sm:pb-14 text-center">
@@ -348,7 +352,7 @@ const PricingPage = () => {
       </section>
 
       {/* Plans grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <section id="plans-grid" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 scroll-mt-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 items-stretch">
           {PLANS.map((p, i) => {
             const price = isYearly ? p.yearlyPrice : p.monthlyPrice;
