@@ -445,7 +445,7 @@ const PricingPage = () => {
                     {p.name}
                   </h3>
 
-                  <div className="mt-3 flex items-baseline gap-1.5">
+                  <div className="mt-3 flex items-baseline gap-1.5 flex-wrap">
                     <span
                       className="font-black leading-none"
                       style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)" }}
@@ -455,11 +455,24 @@ const PricingPage = () => {
                     <span className="text-sm font-medium" style={{ color: p.subText }}>
                       /{isYearly ? "year" : "month"}
                     </span>
+                    {hasPromo && (
+                      <span className="text-base font-bold line-through opacity-60 ms-1" style={{ color: p.subText }}>
+                        ${fullPrice}
+                      </span>
+                    )}
                   </div>
+                  {hasPromo && (
+                    <div className="mt-1.5">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                        -50% WELCOME50
+                      </span>
+                    </div>
+                  )}
 
                   <p className="mt-1 text-sm font-semibold" style={{ color: p.subText }}>
                     {credits}
                   </p>
+
 
                   {p.monthlyPrice >= 29 && (
                     <div className="mt-4">
