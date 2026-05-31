@@ -287,9 +287,9 @@ const PricingPage = () => {
 
       {/* Welcome promo banner — 50% off on Pro and above */}
       <div className="px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/15 via-fuchsia-500/10 to-amber-500/15 px-4 sm:px-6 py-3 sm:py-3.5 flex flex-wrap items-center justify-center gap-2 text-center">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-black tracking-widest">
-            WELCOME50
+        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/15 via-primary/10 to-amber-500/15 px-4 sm:px-6 py-3 sm:py-3.5 flex flex-wrap items-center justify-center gap-2 text-center">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-[11px] font-black tracking-widest">
+            -50%
           </span>
           <span className="text-sm sm:text-base font-bold">
             خصم 50% على جميع الباقات من <span className="text-primary">Pro</span> فما فوق
@@ -445,7 +445,7 @@ const PricingPage = () => {
                     {p.name}
                   </h3>
 
-                  <div className="mt-3 flex items-baseline gap-1.5 flex-wrap">
+                  <div className="mt-3 flex items-baseline gap-2 flex-wrap">
                     <span
                       className="font-black leading-none"
                       style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)" }}
@@ -455,14 +455,20 @@ const PricingPage = () => {
                     <span className="text-sm font-medium" style={{ color: p.subText }}>
                       /{isYearly ? "year" : "month"}
                     </span>
+                    {hasPromo && (
+                      <>
+                        <span
+                          className="text-lg font-bold line-through opacity-70"
+                          style={{ color: p.subText }}
+                        >
+                          ${price * 2}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider bg-emerald-500 text-white shadow-sm">
+                          -50%
+                        </span>
+                      </>
+                    )}
                   </div>
-                  {hasPromo && (
-                    <div className="mt-2">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-                        خصم 50% بكود WELCOME50
-                      </span>
-                    </div>
-                  )}
 
                   <p className="mt-1 text-sm font-semibold" style={{ color: p.subText }}>
                     {credits}
