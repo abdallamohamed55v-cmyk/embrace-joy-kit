@@ -1,4 +1,5 @@
 import DesktopSidebar from "@/components/layout/DesktopSidebar";
+import OnboardingChecklist from "@/components/onboarding/OnboardingChecklist";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -18,8 +19,10 @@ const AppLayout = ({ children, onSelectConversation, onNewChat, activeConversati
       <main className="flex-1 min-w-0 overflow-hidden">
         {children}
       </main>
+      <OnboardingChecklist />
     </div>
   );
 };
 
 export default AppLayout;
+
