@@ -171,14 +171,14 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
                   </div>
                 </div>
 
-                <div className="pt-6">
-                  <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] font-bold tracking-wider mb-4 uppercase">
+                <div className="pt-5">
+                  <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] font-bold tracking-wider mb-3 uppercase">
                     Hand-picked from thousands of users
                   </div>
 
                   <h2
                     id="exclusive-discount-title"
-                    className="font-black leading-[1.05] text-[clamp(1.7rem,4.4vw,2.6rem)] mb-3"
+                    className="font-black leading-[1.05] text-[clamp(1.4rem,4vw,2.4rem)] mb-2.5"
                   >
                     {greeting} here's <span className="text-amber-400">50% OFF</span>
                     <br />
@@ -187,24 +187,24 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
                     </span>
                   </h2>
 
-                  <p className="text-sm sm:text-base text-white/70 leading-relaxed mb-5">
+                  <p className="text-[13px] sm:text-base text-white/70 leading-relaxed mb-4">
                     This isn't a public offer — it was opened for your account right now.
-                    If you leave before confirming, it goes back to other users waiting in line.
+                    Leave and it goes back to other users in line.
                   </p>
 
                   {/* Unlimited list — no icons */}
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
+                  <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 mb-4">
                     {[
                       "Unlimited chats",
                       "Unlimited images",
-                      "Unlimited slides & decks",
-                      "Unlimited docs & research",
-                      "Unlimited Code Builder",
-                      "Megsy OS — agent 24/7",
+                      "Unlimited slides",
+                      "Unlimited docs",
+                      "Unlimited Code",
+                      "Megsy OS 24/7",
                     ].map((t) => (
                       <li
                         key={t}
-                        className="flex items-center gap-2 text-[13px] font-semibold text-white/90"
+                        className="flex items-center gap-1.5 text-[12px] sm:text-[13px] font-semibold text-white/90"
                       >
                         <span className="text-amber-300 font-black">∞</span>
                         {t}
@@ -213,18 +213,18 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
                   </ul>
 
                   {/* Save block */}
-                  <div className="rounded-2xl bg-white/[0.04] border border-white/10 p-5 mb-4">
-                    <div className="flex items-end justify-between gap-4 mb-4">
+                  <div className="rounded-2xl bg-white/[0.04] border border-white/10 p-4 sm:p-5 mb-4">
+                    <div className="flex items-end justify-between gap-3 mb-3">
                       <div>
-                        <div className="text-[11px] text-white/50 uppercase tracking-wider mb-1">You save / year</div>
-                        <div className="font-black text-4xl sm:text-5xl text-amber-300 leading-none">$348</div>
-                        <div className="text-[11px] text-white/50 mt-1">
+                        <div className="text-[10px] text-white/50 uppercase tracking-wider mb-1">You save / year</div>
+                        <div className="font-black text-3xl sm:text-5xl text-amber-300 leading-none">$348</div>
+                        <div className="text-[10px] text-white/50 mt-1">
                           Less than <span className="text-white font-bold">$0.79 / day</span>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Offer ends in</div>
-                        <div className="font-mono font-black text-amber-300 text-2xl sm:text-3xl">
+                        <div className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Ends in</div>
+                        <div className="font-mono font-black text-amber-300 text-xl sm:text-3xl">
                           {expired ? "00:00" : formatTime(remaining)}
                         </div>
                       </div>
@@ -238,6 +238,7 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
                       />
                     </div>
                   </div>
+
 
                   <button
                     onClick={handleClaim}
