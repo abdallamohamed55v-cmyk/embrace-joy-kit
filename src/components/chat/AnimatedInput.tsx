@@ -365,7 +365,7 @@ const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disable
           {!value && displayedPlaceholder && (
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 hidden md:flex items-start px-1 pt-2 text-sm text-muted-foreground leading-relaxed overflow-hidden"
+              className="pointer-events-none absolute inset-0 flex items-start px-1 pt-2 text-[15.5px] md:text-sm text-muted-foreground leading-relaxed overflow-hidden"
             >
               <AnimatePresence mode="wait">
                 <motion.span
