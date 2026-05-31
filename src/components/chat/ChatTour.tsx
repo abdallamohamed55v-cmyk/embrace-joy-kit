@@ -14,8 +14,7 @@ const steps: Step[] = [
     placement: "center",
     title: "Welcome to Megsy 👋",
     content:
-      "A quick 30-second tour to show you everything you can do here — chat, design, learn, code & more.",
-    disableBeacon: true,
+      "A quick 30-second tour to show you everything you can do — chat, design, learn, code & more.",
   },
   {
     target: '[data-tour="composer"]',
@@ -23,7 +22,6 @@ const steps: Step[] = [
     title: "Ask anything",
     content:
       "Type any question or idea here. Megsy understands natural language — no commands needed.",
-    disableBeacon: true,
   },
   {
     target: "[data-plus-trigger]",
@@ -31,7 +29,6 @@ const steps: Step[] = [
     title: "Your toolkit",
     content:
       "Tap + to open Slides, Docs, Images, Video, Code, Deep Research and more — all in one place.",
-    disableBeacon: true,
   },
   {
     target: '[data-tour="composer"]',
@@ -39,14 +36,12 @@ const steps: Step[] = [
     title: "Mention agents with @",
     content:
       "Type @ to call a specific agent (Designer, Coder, Researcher…) and # to pick a model.",
-    disableBeacon: true,
   },
   {
     target: "body",
     placement: "center",
     title: "You're all set ✨",
     content: "Send your first message and let's build something together.",
-    disableBeacon: true,
   },
 ];
 
@@ -63,12 +58,11 @@ const ChatTour = ({ force = false }: ChatTourProps) => {
     } catch {
       /* ignore */
     }
-    // small delay so target elements mount
     const t = setTimeout(() => setRun(true), 700);
     return () => clearTimeout(t);
   }, [force]);
 
-  const handleCallback = (data: CallBackProps) => {
+  const handleEvent = (data: EventData) => {
     const { status } = data;
     if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       try {
@@ -85,11 +79,19 @@ const ChatTour = ({ force = false }: ChatTourProps) => {
       steps={steps}
       run={run}
       continuous
-      showProgress
-      showSkipButton
-      disableScrolling
-      disableOverlayClose
-      callback={handleCallback}
+      onEvent={handleEvent}
+      options={{
+        primaryColor: "hsl(var(--primary))",
+        backgroundColor: "hsl(var(--popover))",
+        textColor: "hsl(var(--popover-foreground))",
+        arrowColor: "hsl(var(--popover))",
+        overlayColor: "hsl(var(--background) / 0.7)",
+        zIndex: 10000,
+        showProgress: true,
+        skipBeacon: true,
+        overlayClickAction: false,
+        buttons: ["back", "skip", "primary"],
+      }}
       locale={{
         back: "Back",
         close: "Close",
@@ -98,14 +100,6 @@ const ChatTour = ({ force = false }: ChatTourProps) => {
         skip: "Skip tour",
       }}
       styles={{
-        options: {
-          zIndex: 10000,
-          primaryColor: "hsl(var(--primary))",
-          backgroundColor: "hsl(var(--popover))",
-          textColor: "hsl(var(--popover-foreground))",
-          arrowColor: "hsl(var(--popover))",
-          overlayColor: "hsl(var(--background) / 0.7)",
-        },
         tooltip: {
           borderRadius: 18,
           padding: 18,
@@ -116,7 +110,7 @@ const ChatTour = ({ force = false }: ChatTourProps) => {
           fontWeight: 600,
           marginBottom: 6,
         },
-        buttonNext: {
+        buttonPrimary: {
           borderRadius: 999,
           padding: "8px 16px",
           fontSize: 13,
