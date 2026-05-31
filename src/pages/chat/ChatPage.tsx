@@ -4933,6 +4933,9 @@ Ask me anything to get started!`;
                     })()
                   }
                 />
+                </div>
+
+
 
                 {/* Apps strip merged under the input (desktop) — hidden once a chat starts */}
                 {messages.length === 0 && (() => {
