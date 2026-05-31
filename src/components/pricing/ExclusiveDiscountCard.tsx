@@ -7,7 +7,7 @@ import {
   ResponsiveDialogTitle,
   ResponsiveDialogDescription,
 } from "@/components/ui/responsive-dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+
 
 const SESSION_DEADLINE_KEY = "megsy_promo_deadline_v1";
 const SESSION_DISMISSED_KEY = "megsy_promo_dismissed_v1";
@@ -97,12 +97,13 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
       <ResponsiveDialogContent
         desktopClassName="!max-w-lg !p-0 !rounded-2xl border-amber-400/20 bg-[#0a0a14] text-white"
       >
-        <VisuallyHidden>
+        <div className="sr-only">
           <ResponsiveDialogTitle>Exclusive 50% discount</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
             A personal offer reserved for your account.
           </ResponsiveDialogDescription>
-        </VisuallyHidden>
+        </div>
+
 
         <div className="relative bg-gradient-to-br from-[#0a0a14] via-[#13101f] to-[#0a0a14] text-white">
           <style>{`
