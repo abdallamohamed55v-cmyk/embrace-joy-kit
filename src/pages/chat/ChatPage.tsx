@@ -4184,59 +4184,7 @@ Ask me anything to get started!`;
                 ];
                 const color = ACCENT_COLORS[mobileGreetingColor % ACCENT_COLORS.length];
                 const phrase = RETURNING_GREETINGS[0];
-                const ServiceChips = (
-                  <div className="flex flex-wrap items-center justify-center gap-1.5 mt-5 px-1 max-w-xl mx-auto">
-                    {([
-                      { id: "megsy-os" as const, label: "Megsy OS", Icon: Atom },
-                      { id: "deep-research" as const, label: "Deep Research", Icon: Telescope },
-                      { id: "code-nav" as const, label: "Code", Icon: Layers, href: "/code" },
-                      { id: "media-nav" as const, label: "Media", Icon: Images, href: "/media" },
-                      { id: "slides" as const, label: "Slides", Icon: Presentation },
-                      { id: "slides-images" as const, label: "Slides with images", Icon: Projector },
-                      { id: "learning" as const, label: "Learning", Icon: GraduationCap },
-                      { id: "docs" as const, label: "Docs", Icon: NotebookPen },
-                    ]).map((a) => {
-                      const active =
-                        a.id === "docs" ? selectedAgent?.id === "docs" :
-                        a.id === "megsy-os" ? chatMode === "operator" :
-                        (a as any).href ? false :
-                        chatMode === a.id;
-                      return (
-                        <button
-                          key={a.id}
-                          type="button"
-                          onClick={() => {
-                            if ((a as any).href) { navigate((a as any).href); return; }
-                            if (a.id === "docs") {
-                              if (active) { setSelectedAgent(null); }
-                              else {
-                                setChatMode("normal");
-                                import("@/lib/agentRegistry").then(({ AGENTS }) => {
-                                  const def = AGENTS.find((x) => x.id === "docs");
-                                  if (def) setSelectedAgent(def);
-                                });
-                              }
-                            } else if (a.id === "megsy-os") {
-                              if (active) handleModeChange("normal");
-                              else tryActivateMegsyOs();
-                            } else {
-                              handleModeChange(active ? "normal" : (a.id as ChatMode));
-                            }
-                          }}
-                          className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full border text-[12px] font-medium shrink-0 transition-colors ${
-                            active
-                              ? "border-primary/60 bg-primary/10 text-primary"
-                              : "border-border/60 bg-background/40 backdrop-blur text-foreground/75 hover:text-foreground hover:bg-foreground/[0.05]"
-                          }`}
-                        >
-                          <a.Icon className="w-3.5 h-3.5" strokeWidth={2} />
-                          <span>{a.label}</span>
-                        </button>
-                      );
-                    })}
-
-                  </div>
-                );
+                const ServiceChips = null;
                 return (
                   <div className="w-full flex flex-col items-center">
                     <motion.div
