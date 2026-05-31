@@ -186,8 +186,14 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
 
           <div className="leading-[0.85]">
             <h1
-              className="font-black text-black tracking-[-0.05em]"
-              style={{ fontSize: "clamp(88px,28vw,118px)" }}
+              className="font-black tracking-[-0.05em] bg-clip-text text-transparent"
+              style={{
+                fontSize: "clamp(88px,28vw,118px)",
+                backgroundImage:
+                  "linear-gradient(180deg, #FFE177 0%, #E8B43A 45%, #B57A12 100%)",
+                WebkitTextStroke: "2px #000",
+                filter: "drop-shadow(0 4px 0 rgba(0,0,0,0.9))",
+              }}
             >
               50%
             </h1>
