@@ -150,9 +150,23 @@ const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disable
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newVal = e.target.value;
     onChange(newVal);
-    
+
     const cursorPos = e.target.selectionStart;
     const textBeforeCursor = newVal.slice(0, cursorPos);
+
+    // Slash command: only when `/` is the very first char of the input
+    if (slashCommands && slashCommands.length > 0) {
+      const slashMatch = newVal.match(/^\/(\w*)$/);
+      if (slashMatch) {
+        setSlashOpen(true);
+        setSlashQuery(slashMatch[1]);
+        setMentionOpen(false);
+        setModelPickerOpen(false);
+        return;
+      }
+      if (slashOpen) setSlashOpen(false);
+    }
+
 
     // Check for # model picker (when agent with models is selected)
     if ((activeAgent || lastSelectedAgent) && activeAgentModels.length > 0) {
