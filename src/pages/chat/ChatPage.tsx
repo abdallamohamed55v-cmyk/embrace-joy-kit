@@ -4649,9 +4649,9 @@ Ask me anything to get started!`;
 
 
               <div className="relative mx-auto w-full max-w-3xl">
-                <div className="md:hidden"><AgentsOnboarding /></div>
                 <ChatTour />
                 <div data-tour="composer">
+
 
 
                 <AnimatePresence>
