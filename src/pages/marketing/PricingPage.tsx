@@ -104,6 +104,7 @@ const PLANS: PlanCardConfig[] = [
     features: [
       "Everything in Pro",
       "Unlimited images — priority queue",
+      "Unlimited Code builder — priority",
       "Advanced presets & custom branding",
       "API + webhooks",
       "Analytics dashboard",
