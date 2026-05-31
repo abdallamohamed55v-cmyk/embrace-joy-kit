@@ -529,17 +529,42 @@ const PricingPage = () => {
 
 
                   {/* Features */}
-                  <ul className="mt-6 space-y-2.5 flex-1">
-                    {p.features.map((f) => (
-                      <li
-                        key={f}
-                        className="flex items-start gap-2.5 text-sm"
-                        style={{ color: p.subText }}
-                      >
-                        <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: p.text }} />
-                        <span>{f}</span>
-                      </li>
-                    ))}
+                  <ul className="mt-6 space-y-2 flex-1">
+                    {p.features.map((f) => {
+                      const isUnlimited = /unlimited/i.test(f);
+                      return (
+                        <li
+                          key={f}
+                          className={`flex items-start gap-2.5 text-sm rounded-lg transition-colors ${
+                            isUnlimited ? "px-2.5 py-1.5 -mx-1" : ""
+                          }`}
+                          style={{
+                            color: isUnlimited ? p.text : p.subText,
+                            background: isUnlimited
+                              ? (p.tier === "starter"
+                                  ? "linear-gradient(90deg, rgba(16,185,129,0.18), rgba(16,185,129,0.04))"
+                                  : "linear-gradient(90deg, rgba(255,215,0,0.22), rgba(255,215,0,0.04))")
+                              : undefined,
+                            border: isUnlimited
+                              ? (p.tier === "starter"
+                                  ? "1px solid rgba(16,185,129,0.35)"
+                                  : "1px solid rgba(255,215,0,0.45)")
+                              : undefined,
+                            fontWeight: isUnlimited ? 700 : undefined,
+                          }}
+                        >
+                          <Check
+                            className="w-4 h-4 shrink-0 mt-0.5"
+                            style={{
+                              color: isUnlimited
+                                ? (p.tier === "starter" ? "#059669" : "#FFD700")
+                                : p.text,
+                            }}
+                          />
+                          <span>{f}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </motion.div>
