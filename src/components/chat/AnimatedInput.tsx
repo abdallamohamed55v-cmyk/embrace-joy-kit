@@ -38,11 +38,12 @@ interface AnimatedInputProps {
 }
 
 const DEFAULT_PLACEHOLDERS = [
-  "اسأل Megsy عن أي حاجة…",
-  "ابدأ مشروعك بفكرة واحدة…",
-  "صمّم، اكتب، ابحث — كله من هنا",
-  "اكتب سؤالك وخليني أساعدك",
+  "Ask Megsy anything…",
+  "Start your next project with one idea…",
+  "Design, write, research — all in one place",
+  "Type a question and let's get started",
 ];
+
 
 
 const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disabled, isLoading, placeholders, pendingQuestions, onQuestionAnswer, onQuestionSkip, activeAgent, onAgentSelect, onAgentRemove, mentionCategories, selectedModel, onModelSelect, onModelRemove, accentMode, headerSlot, inlineSlot }: AnimatedInputProps) => {
