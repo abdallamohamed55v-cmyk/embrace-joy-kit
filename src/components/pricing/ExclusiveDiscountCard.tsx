@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { X } from "lucide-react";
 import MegsyStar from "@/components/files/MegsyStar";
 
-const SESSION_DEADLINE_KEY = "megsy_promo_deadline_v1";
+const LOCAL_DEADLINE_KEY = "megsy_promo_deadline_v2";
 const SESSION_DISMISSED_KEY = "megsy_promo_dismissed_v1";
-const WINDOW_MINUTES = 60 * 24; // 24h flash sale
+const PROMO_KEY = "megsy_pro_50";
+const WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 const fmt = (ms: number) => {
   const t = Math.max(0, Math.floor(ms / 1000));
@@ -19,20 +21,69 @@ interface Props {
 }
 
 export default function ExclusiveDiscountCard({ onClaim }: Props) {
-  const [, setName] = useState("");
   const [now, setNow] = useState(() => Date.now());
   const [open, setOpen] = useState(false);
+  const [deadline, setDeadline] = useState<number | null>(null);
 
+  // Resolve the deadline: prefer Supabase row for logged-in user, else localStorage, else create fresh.
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const { data } = await supabase.auth.getUser();
-      const u = data.user;
-      const display =
-        (u?.user_metadata?.full_name as string | undefined) ||
-        (u?.user_metadata?.name as string | undefined) ||
-        (u?.email ? u.email.split("@")[0] : "");
-      if (!cancelled && display) setName(String(display).split(" ")[0]);
+      const user = data.user;
+
+      // Logged-in: read from supabase
+      if (user) {
+        const { data: row } = await supabase
+          .from("promo_deadlines")
+          .select("deadline_at")
+          .eq("user_id", user.id)
+          .eq("promo_key", PROMO_KEY)
+          .maybeSingle();
+
+        if (cancelled) return;
+
+        if (row?.deadline_at) {
+          const d = new Date(row.deadline_at).getTime();
+          if (d > Date.now()) {
+            setDeadline(d);
+            try { localStorage.setItem(LOCAL_DEADLINE_KEY, String(d)); } catch {}
+            return;
+          }
+        }
+
+        // No valid row → create one
+        const fresh = Date.now() + WINDOW_MS;
+        await supabase.from("promo_deadlines").upsert(
+          {
+            user_id: user.id,
+            promo_key: PROMO_KEY,
+            deadline_at: new Date(fresh).toISOString(),
+          },
+          { onConflict: "user_id" }
+        );
+        if (cancelled) return;
+        setDeadline(fresh);
+        try { localStorage.setItem(LOCAL_DEADLINE_KEY, String(fresh)); } catch {}
+        return;
+      }
+
+      // Guest: localStorage
+      try {
+        const existing = localStorage.getItem(LOCAL_DEADLINE_KEY);
+        if (existing) {
+          const d = parseInt(existing, 10);
+          if (!Number.isNaN(d) && d > Date.now()) {
+            setDeadline(d);
+            return;
+          }
+        }
+        const fresh = Date.now() + WINDOW_MS;
+        localStorage.setItem(LOCAL_DEADLINE_KEY, String(fresh));
+        setDeadline(fresh);
+      } catch {
+        setDeadline(Date.now() + WINDOW_MS);
+      }
     })();
     return () => {
       cancelled = true;
@@ -45,21 +96,6 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
     } catch {}
     const t = window.setTimeout(() => setOpen(true), 500);
     return () => window.clearTimeout(t);
-  }, []);
-
-  const deadline = useMemo(() => {
-    try {
-      const existing = sessionStorage.getItem(SESSION_DEADLINE_KEY);
-      if (existing) {
-        const d = parseInt(existing, 10);
-        if (!Number.isNaN(d) && d > Date.now()) return d;
-      }
-      const fresh = Date.now() + WINDOW_MINUTES * 60 * 1000;
-      sessionStorage.setItem(SESSION_DEADLINE_KEY, String(fresh));
-      return fresh;
-    } catch {
-      return Date.now() + WINDOW_MINUTES * 60 * 1000;
-    }
   }, []);
 
   useEffect(() => {
@@ -101,8 +137,8 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
     onClaim();
   };
 
-  const remaining = deadline - now;
-  const expired = remaining <= 0;
+  const remaining = deadline ? deadline - now : WINDOW_MS;
+  const expired = deadline !== null && remaining <= 0;
 
   const perks = [
     "Unlimited AI chats",
@@ -121,13 +157,14 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
       className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4 sm:p-6 font-sans"
       style={{ background: "#FF4D00" }}
     >
-      {/* Close */}
+      {/* Close — high contrast circular button */}
       <button
         onClick={close}
         aria-label="Close"
-        className="absolute top-5 right-5 z-20 text-white/90 hover:text-white font-black text-xs uppercase tracking-[0.2em] border-b-2 border-white/40 hover:border-white pb-1 transition-colors"
+        className="absolute top-5 right-5 z-20 w-11 h-11 grid place-items-center rounded-full bg-black text-white border-2 border-white hover:bg-white hover:text-black transition-colors"
+        style={{ boxShadow: "3px 3px 0 0 rgba(0,0,0,0.6)" }}
       >
-        Close
+        <X className="w-5 h-5" strokeWidth={3} />
       </button>
 
       <div
@@ -177,7 +214,7 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
               className="bg-white border-2 border-black p-4 flex flex-col"
               style={{ boxShadow: "4px 4px 0 0 #000" }}
             >
-              <span className="text-[10px] font-black uppercase text-black/40 leading-none mb-1.5 tracking-wider">
+              <span className="text-[11px] font-black uppercase text-black leading-none mb-2 tracking-wider">
                 Flash sale ends in
               </span>
               <span className="text-3xl font-black tabular-nums tracking-tighter text-black leading-none font-mono">
@@ -195,9 +232,6 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
               className="bg-[#FFD700] px-5 py-2.5 border-2 border-black flex items-center gap-2"
               style={{ boxShadow: "4px 4px 0 0 #000" }}
             >
-              <span className="text-black">
-                <MegsyStar size={14} static />
-              </span>
               <span className="font-black text-black text-[11px] uppercase tracking-tight">
                 +3 Months Free Credits
               </span>
@@ -208,9 +242,9 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             {perks.map((p) => (
               <li key={p} className="flex items-center gap-3 text-white">
                 <span className="text-[#FF4D00] shrink-0">
-                  <MegsyStar size={14} static />
+                  <MegsyStar size={16} static />
                 </span>
-                <span className="font-bold text-[15px] leading-none tracking-tight">
+                <span className="font-bold text-[15px] leading-none tracking-tight text-white">
                   {p}
                 </span>
               </li>
@@ -223,17 +257,8 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             className="mt-9 w-full py-5 bg-[#FF4D00] text-white font-black text-lg border-2 border-black uppercase tracking-tight transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px]"
             style={{ boxShadow: "6px 6px 0 0 #000" }}
           >
-            <span className="inline-flex items-center justify-center gap-2">
-              <MegsyStar size={16} static />
-              {expired ? "Offer expired" : "Get 50% Discount"}
-            </span>
+            {expired ? "Offer expired" : "Get 50% Discount"}
           </button>
-
-          <div className="mt-6 flex justify-center">
-            <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] border-t border-white/10 pt-4 w-full text-center">
-              Secure checkout • Cancel anytime
-            </p>
-          </div>
         </div>
       </div>
     </div>

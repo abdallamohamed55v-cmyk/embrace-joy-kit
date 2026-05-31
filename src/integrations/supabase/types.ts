@@ -3780,6 +3780,33 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_deadlines: {
+        Row: {
+          created_at: string
+          deadline_at: string
+          id: string
+          promo_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deadline_at: string
+          id?: string
+          promo_key?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deadline_at?: string
+          id?: string
+          promo_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       rate_limit_buckets: {
         Row: {
           blocked_until: string | null
