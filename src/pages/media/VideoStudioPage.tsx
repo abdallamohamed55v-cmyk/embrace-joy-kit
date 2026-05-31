@@ -240,6 +240,8 @@ const VideoStudioPage = () => {
       const url = data?.video_url;
       if (!url) throw new Error("No video returned");
       setMessages(prev => prev.map(m => m.id === assistantMsg.id ? { ...m, videos: [url] } : m));
+      const { triggerAha } = await import("@/lib/ahaTracker");
+      triggerAha("video");
     } catch (err: any) {
       const msg = err?.message || "Generation failed";
       setMessages(prev => prev.map(m => m.id === assistantMsg.id ? { ...m, content: msg } : m));
