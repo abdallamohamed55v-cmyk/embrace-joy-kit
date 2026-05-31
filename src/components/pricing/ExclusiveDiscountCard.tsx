@@ -290,7 +290,9 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             className="mt-9 w-full py-5 bg-[#FF4D00] text-white font-black text-lg border-2 border-black uppercase tracking-tight transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px]"
             style={{ boxShadow: "6px 6px 0 0 #000" }}
           >
-            {expired ? "Offer expired" : "Get 50% Discount"}
+            {soldOut ? "Sold out — back tomorrow" : timerExpired ? "Offer expired" : "Start saving now — $29"}
+          </button>
+
           </button>
         </div>
       </div>
