@@ -5015,7 +5015,7 @@ Ask me anything to get started!`;
 
                 {/* Desktop-only mode chips below the input (replaces the agents
                     list inside the + menu on md+). */}
-                <div className={`${messages.length === 0 ? "hidden md:flex" : "hidden"} flex-wrap items-center justify-center gap-1.5 mt-2 px-1`}>
+                <div className={`${messages.length === 0 ? "flex" : "hidden"} flex-wrap items-center justify-center gap-1.5 mt-2 px-1`}>
                   {([
                     { id: "megsy-os" as const, label: "Megsy OS", Icon: Atom },
                     { id: "deep-research" as const, label: "Deep Research", Icon: Telescope },
