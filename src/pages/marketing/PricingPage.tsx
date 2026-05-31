@@ -291,17 +291,14 @@ const PricingPage = () => {
         <h1 className="text-base font-bold tracking-tight">Pricing</h1>
       </div>
 
-      {/* Welcome promo banner — 50% off on Pro and above */}
-      <div className="px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/15 via-primary/10 to-amber-500/15 px-4 sm:px-6 py-3 sm:py-3.5 flex flex-wrap items-center justify-center gap-2 text-center">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-[11px] font-black tracking-widest">
-            -50%
-          </span>
-          <span className="text-sm sm:text-base font-bold">
-            خصم 50% على جميع الباقات من <span className="text-primary">Pro</span> فما فوق
-          </span>
-          <span className="text-xs sm:text-sm text-muted-foreground">— لفترة محدودة</span>
-        </div>
+      {/* Exclusive personal discount card — 50% off + Unlimited */}
+      <div className="px-4 sm:px-6 max-w-7xl mx-auto mt-2 mb-2">
+        <ExclusiveDiscountCard
+          onClaim={() => {
+            const el = document.getElementById("plans-grid");
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+        />
       </div>
 
       <section className="max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-14 pb-10 sm:pb-14 text-center">
