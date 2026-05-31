@@ -1,19 +1,11 @@
 import { useState, useEffect, useRef, useMemo, useCallback, useDeferredValue } from "react";
-import { Plus, ArrowUp, Square, X, Sparkles, Loader2, type LucideIcon } from "lucide-react";
+import { Plus, ArrowUp, Square, X, Sparkles, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import MentionDropdown from "./MentionDropdown";
 import ModelPickerDropdown from "@/components/model-picker/ModelPickerDropdown";
 import type { AgentDef, AgentModel } from "@/lib/agentRegistry";
 import { getAgentById } from "@/lib/agentRegistry";
 import { TypingAnimation } from "@/components/ui/typing-animation";
-
-export interface SlashCommand {
-  id: string;
-  label: string;
-  description?: string;
-  Icon?: LucideIcon;
-}
-
 
 interface SmartQuestion {
   title: string;
@@ -43,21 +35,18 @@ interface AnimatedInputProps {
   accentMode?: "learn" | null;
   headerSlot?: React.ReactNode;
   inlineSlot?: React.ReactNode;
-  slashCommands?: SlashCommand[];
-  onSlashSelect?: (id: string) => void;
 }
 
 const DEFAULT_PLACEHOLDERS = [
   "Ask Megsy anything…",
-  "Type / to see all services",
   "Start your next project with one idea…",
   "Design, write, research — all in one place",
+  "Type a question and let's get started",
 ];
 
 
 
-
-const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disabled, isLoading, placeholders, pendingQuestions, onQuestionAnswer, onQuestionSkip, activeAgent, onAgentSelect, onAgentRemove, mentionCategories, selectedModel, onModelSelect, onModelRemove, accentMode, headerSlot, inlineSlot, slashCommands, onSlashSelect }: AnimatedInputProps) => {
+const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disabled, isLoading, placeholders, pendingQuestions, onQuestionAnswer, onQuestionSkip, activeAgent, onAgentSelect, onAgentRemove, mentionCategories, selectedModel, onModelSelect, onModelRemove, accentMode, headerSlot, inlineSlot }: AnimatedInputProps) => {
   const deferredValue = useDeferredValue(value);
   const items = useMemo(() => placeholders && placeholders.length > 0 ? placeholders : DEFAULT_PLACEHOLDERS, [placeholders]);
   const [placeholderIndex, setPlaceholderIndex] = useState(() => Math.floor(Math.random() * items.length));
@@ -73,25 +62,6 @@ const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disable
   const [modelPickerOpen, setModelPickerOpen] = useState(false);
   const [modelQuery, setModelQuery] = useState("");
   const [lastSelectedAgent, setLastSelectedAgent] = useState<AgentDef | null>(null);
-  const [slashOpen, setSlashOpen] = useState(false);
-  const [slashQuery, setSlashQuery] = useState("");
-  const [slashIndex, setSlashIndex] = useState(0);
-
-  const filteredSlash = useMemo(() => {
-    if (!slashCommands?.length) return [];
-    const q = slashQuery.toLowerCase().trim();
-    if (!q) return slashCommands;
-    return slashCommands.filter((c) => c.label.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
-  }, [slashCommands, slashQuery]);
-
-  useEffect(() => { setSlashIndex(0); }, [slashQuery, slashOpen]);
-
-  const triggerSlash = (id: string) => {
-    onSlashSelect?.(id);
-    onChange("");
-    setSlashOpen(false);
-    setSlashQuery("");
-  };
 
 
 
@@ -127,46 +97,24 @@ const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disable
   }, [value, items]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Escape" && (mentionOpen || modelPickerOpen || slashOpen)) {
+    if (e.key === "Escape" && (mentionOpen || modelPickerOpen)) {
       setMentionOpen(false);
       setModelPickerOpen(false);
-      setSlashOpen(false);
       return;
-    }
-    if (slashOpen && filteredSlash.length > 0) {
-      if (e.key === "ArrowDown") { e.preventDefault(); setSlashIndex((i) => (i + 1) % filteredSlash.length); return; }
-      if (e.key === "ArrowUp") { e.preventDefault(); setSlashIndex((i) => (i - 1 + filteredSlash.length) % filteredSlash.length); return; }
-      if (e.key === "Tab") { e.preventDefault(); triggerSlash(filteredSlash[slashIndex].id); return; }
     }
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (slashOpen && filteredSlash.length > 0) { triggerSlash(filteredSlash[slashIndex].id); return; }
       if (mentionOpen || modelPickerOpen) { setMentionOpen(false); setModelPickerOpen(false); return; }
       if (value.trim() && !disabled && !isLoading) onSend();
     }
   };
 
-
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newVal = e.target.value;
     onChange(newVal);
-
+    
     const cursorPos = e.target.selectionStart;
     const textBeforeCursor = newVal.slice(0, cursorPos);
-
-    // Slash command: only when `/` is the very first char of the input
-    if (slashCommands && slashCommands.length > 0) {
-      const slashMatch = newVal.match(/^\/(\w*)$/);
-      if (slashMatch) {
-        setSlashOpen(true);
-        setSlashQuery(slashMatch[1]);
-        setMentionOpen(false);
-        setModelPickerOpen(false);
-        return;
-      }
-      if (slashOpen) setSlashOpen(false);
-    }
-
 
     // Check for # model picker (when agent with models is selected)
     if ((activeAgent || lastSelectedAgent) && activeAgentModels.length > 0) {
@@ -293,52 +241,7 @@ const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disable
             onClose={() => setModelPickerOpen(false)}
           />
         )}
-        {slashOpen && filteredSlash.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 6, scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 380, damping: 28 }}
-            className="absolute bottom-full left-0 right-0 mb-2 z-50 mx-1"
-          >
-            <div className="rounded-2xl border border-border bg-popover/95 backdrop-blur-xl shadow-2xl overflow-hidden max-h-[280px] overflow-y-auto">
-              <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border/50">
-                Services
-              </div>
-              <div className="p-1">
-                {filteredSlash.map((cmd, i) => {
-                  const Icon = cmd.Icon;
-                  const active = i === slashIndex;
-                  return (
-                    <button
-                      key={cmd.id}
-                      type="button"
-                      onMouseEnter={() => setSlashIndex(i)}
-                      onClick={() => triggerSlash(cmd.id)}
-                      className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-left transition-colors ${
-                        active ? "bg-accent text-accent-foreground" : "text-popover-foreground hover:bg-accent/50"
-                      }`}
-                    >
-                      {Icon && (
-                        <span className="shrink-0 w-7 h-7 rounded-md bg-foreground/[0.06] flex items-center justify-center">
-                          <Icon className="w-3.5 h-3.5" strokeWidth={2} />
-                        </span>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <div className="text-[13px] font-medium leading-tight">{cmd.label}</div>
-                        {cmd.description && (
-                          <div className="text-[11px] text-muted-foreground truncate mt-0.5">{cmd.description}</div>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.div>
-        )}
       </AnimatePresence>
-
       {/* Floating chips ABOVE the input (no border / no surface) */}
       {headerSlot && (
         <div className="mb-2 flex justify-start pointer-events-auto px-1">
