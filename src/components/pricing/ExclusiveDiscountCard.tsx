@@ -230,19 +230,31 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             </div>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-8 grid grid-cols-2 gap-3">
             <div
-              className="bg-white border-2 border-black p-4 flex flex-col"
+              className="bg-white border-2 border-black p-3 flex flex-col"
               style={{ boxShadow: "4px 4px 0 0 #000" }}
             >
-              <span className="text-[11px] font-black uppercase text-black leading-none mb-2 tracking-wider">
-                Flash sale ends in
+              <span className="text-[10px] font-black uppercase text-black leading-none mb-2 tracking-wider">
+                Ends in
               </span>
-              <span className="text-3xl font-black tabular-nums tracking-tighter text-black leading-none font-mono">
-                {expired ? "00:00:00" : fmt(remaining)}
+              <span className="text-xl font-black tabular-nums tracking-tighter text-black leading-none font-mono">
+                {timerExpired ? "00:00:00" : fmt(remaining)}
+              </span>
+            </div>
+            <div
+              className="bg-black border-2 border-black p-3 flex flex-col"
+              style={{ boxShadow: "4px 4px 0 0 #FF4D00" }}
+            >
+              <span className="text-[10px] font-black uppercase text-[#FFD700] leading-none mb-2 tracking-wider">
+                Spots left today
+              </span>
+              <span className="text-xl font-black tabular-nums tracking-tighter text-white leading-none">
+                {spotsLeft === null ? "—" : `${spotsLeft}/${totalSlots}`}
               </span>
             </div>
           </div>
+
         </div>
 
         {/* ===== BOTTOM DARK ===== */}
