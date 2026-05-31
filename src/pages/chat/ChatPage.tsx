@@ -1153,6 +1153,35 @@ const ChatPage = () => {
     setPlusMenuOpen(false);
   };
 
+  // Unified service registry — used by slash menu (`/`) and the welcome-screen suggested cards.
+  const CHAT_SERVICES = useMemo(() => ([
+    { id: "megsy-os", label: "Megsy OS", description: "Autonomous multi-agent operator", Icon: Atom },
+    { id: "deep-research", label: "Deep Research", description: "In-depth web research report", Icon: Telescope },
+    { id: "code-nav", label: "Code", description: "Build & ship full apps", Icon: Layers, href: "/code" },
+    { id: "media-nav", label: "Media", description: "Images, video & audio studio", Icon: Images, href: "/media" },
+    { id: "slides", label: "Slides", description: "Generate a presentation", Icon: Presentation },
+    { id: "slides-images", label: "Slides with images", description: "Image-designed PDF deck", Icon: Projector },
+    { id: "learning", label: "Learning", description: "Tutor mode with study tools", Icon: GraduationCap },
+    { id: "docs", label: "Docs", description: "Write & edit documents", Icon: NotebookPen },
+  ]), []);
+
+  const triggerChatService = useCallback((id: string) => {
+    const svc = CHAT_SERVICES.find((s) => s.id === id);
+    if (!svc) return;
+    if ((svc as any).href) { navigate((svc as any).href); return; }
+    if (id === "docs") {
+      setChatMode("normal");
+      import("@/lib/agentRegistry").then(({ AGENTS }) => {
+        const def = AGENTS.find((x) => x.id === "docs");
+        if (def) setSelectedAgent(def);
+      });
+      return;
+    }
+    if (id === "megsy-os") { tryActivateMegsyOs(); return; }
+    handleModeChange(id as ChatMode);
+  }, [CHAT_SERVICES, navigate, tryActivateMegsyOs]);
+
+
   const handleSearchToggle = () => {
     setSearchEnabled(!searchEnabled);
     if (!searchEnabled) setChatMode("normal");
