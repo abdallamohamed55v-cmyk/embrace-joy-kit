@@ -103,6 +103,7 @@ export default function CodeWorkspacePage() {
       setPreviewKey((k) => k + 1);
       if (json.editedFiles?.length) {
         toast.success(`Edited ${json.editedFiles.length} file(s)`);
+        try { const { triggerAha } = await import("@/lib/ahaTracker"); triggerAha("code"); } catch { /* noop */ }
       }
     } catch (e: any) {
       console.error(e);

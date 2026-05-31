@@ -2169,6 +2169,7 @@ const ChatPage = () => {
       },
       onDone: async () => {
         if (hadStreamError) return;
+        try { const { triggerAha } = await import("@/lib/ahaTracker"); triggerAha("chat"); } catch { /* noop */ }
         // Clean up resume pointers — the turn is finishing now.
         if (isDeepResearch) {
           if (deepResearchJobId) removeActiveChatJob(deepResearchJobId);
