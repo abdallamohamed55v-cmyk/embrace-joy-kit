@@ -293,7 +293,7 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             {soldOut ? "Sold out — back tomorrow" : timerExpired ? "Offer expired" : "Start saving now — $29"}
           </button>
 
-          </button>
+
         </div>
       </div>
     </div>
