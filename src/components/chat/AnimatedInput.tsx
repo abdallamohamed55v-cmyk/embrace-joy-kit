@@ -43,14 +43,17 @@ interface AnimatedInputProps {
   accentMode?: "learn" | null;
   headerSlot?: React.ReactNode;
   inlineSlot?: React.ReactNode;
+  slashCommands?: SlashCommand[];
+  onSlashSelect?: (id: string) => void;
 }
 
 const DEFAULT_PLACEHOLDERS = [
   "Ask Megsy anything…",
+  "Type / to see all services",
   "Start your next project with one idea…",
   "Design, write, research — all in one place",
-  "Type a question and let's get started",
 ];
+
 
 
 
