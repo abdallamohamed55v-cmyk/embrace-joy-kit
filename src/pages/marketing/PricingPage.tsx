@@ -350,9 +350,8 @@ const PricingPage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 items-stretch">
           {PLANS.map((p, i) => {
-            const fullPrice = isYearly ? p.yearlyPrice : p.monthlyPrice;
+            const price = isYearly ? p.yearlyPrice : p.monthlyPrice;
             const hasPromo = p.tier !== "starter";
-            const price = hasPromo ? Math.round(fullPrice / 2) : fullPrice;
             const credits = isYearly ? p.yearlyCredits : p.monthlyCredits;
             const isElite = p.tier === "elite";
 
@@ -455,16 +454,11 @@ const PricingPage = () => {
                     <span className="text-sm font-medium" style={{ color: p.subText }}>
                       /{isYearly ? "year" : "month"}
                     </span>
-                    {hasPromo && (
-                      <span className="text-base font-bold line-through opacity-60 ms-1" style={{ color: p.subText }}>
-                        ${fullPrice}
-                      </span>
-                    )}
                   </div>
                   {hasPromo && (
-                    <div className="mt-1.5">
+                    <div className="mt-2">
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-                        -50% WELCOME50
+                        خصم 50% بكود WELCOME50
                       </span>
                     </div>
                   )}
