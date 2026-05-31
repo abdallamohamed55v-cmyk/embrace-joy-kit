@@ -445,7 +445,7 @@ const PricingPage = () => {
                     {p.name}
                   </h3>
 
-                  <div className="mt-3 flex items-baseline gap-1.5 flex-wrap">
+                  <div className="mt-3 flex items-baseline gap-2 flex-wrap">
                     <span
                       className="font-black leading-none"
                       style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)" }}
@@ -455,14 +455,20 @@ const PricingPage = () => {
                     <span className="text-sm font-medium" style={{ color: p.subText }}>
                       /{isYearly ? "year" : "month"}
                     </span>
+                    {hasPromo && (
+                      <>
+                        <span
+                          className="text-lg font-bold line-through opacity-70"
+                          style={{ color: p.subText }}
+                        >
+                          ${price * 2}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider bg-emerald-500 text-white shadow-sm">
+                          -50%
+                        </span>
+                      </>
+                    )}
                   </div>
-                  {hasPromo && (
-                    <div className="mt-2">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-                        خصم 50% بكود WELCOME50
-                      </span>
-                    </div>
-                  )}
 
                   <p className="mt-1 text-sm font-semibold" style={{ color: p.subText }}>
                     {credits}
