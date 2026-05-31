@@ -4615,7 +4615,7 @@ Ask me anything to get started!`;
 
 
               <div className="relative mx-auto w-full max-w-3xl">
-                <ChatTour />
+                
                 <ProUpsellModal />
                 <div data-tour="composer">
 
