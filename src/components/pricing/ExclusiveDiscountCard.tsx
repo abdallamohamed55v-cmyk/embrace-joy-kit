@@ -1,11 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  ResponsiveDialog,
-  ResponsiveDialogContent,
-  ResponsiveDialogTitle,
-  ResponsiveDialogDescription,
-} from "@/components/ui/responsive-dialog";
+import { X } from "lucide-react";
 
 const SESSION_DEADLINE_KEY = "megsy_promo_deadline_v1";
 const SESSION_DISMISSED_KEY = "megsy_promo_dismissed_v1";
@@ -18,6 +13,25 @@ const fmt = (ms: number) => {
 
 interface Props {
   onClaim: () => void;
+}
+
+/** Megsy mark (the only icon allowed inside this card). */
+function MegsyMark({ size = 28, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+    >
+      <path
+        d="M12 1L14.39 8.26L22 9.27L16.5 14.14L17.78 22L12 18.27L6.22 22L7.5 14.14L2 9.27L9.61 8.26L12 1Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
 }
 
 export default function ExclusiveDiscountCard({ onClaim }: Props) {
@@ -36,11 +50,15 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
         (u?.email ? u.email.split("@")[0] : "");
       if (!cancelled && display) setName(String(display).split(" ")[0]);
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
-    try { if (sessionStorage.getItem(SESSION_DISMISSED_KEY) === "1") return; } catch {}
+    try {
+      if (sessionStorage.getItem(SESSION_DISMISSED_KEY) === "1") return;
+    } catch {}
     const t = window.setTimeout(() => setOpen(true), 500);
     return () => window.clearTimeout(t);
   }, []);
@@ -55,7 +73,9 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
       const fresh = Date.now() + WINDOW_MINUTES * 60 * 1000;
       sessionStorage.setItem(SESSION_DEADLINE_KEY, String(fresh));
       return fresh;
-    } catch { return Date.now() + WINDOW_MINUTES * 60 * 1000; }
+    } catch {
+      return Date.now() + WINDOW_MINUTES * 60 * 1000;
+    }
   }, []);
 
   useEffect(() => {
@@ -64,13 +84,37 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
     return () => window.clearInterval(id);
   }, [open]);
 
-  const handleOpen = (next: boolean) => {
-    if (!next) { try { sessionStorage.setItem(SESSION_DISMISSED_KEY, "1"); } catch {} }
-    setOpen(next);
+  // Lock body scroll while open
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  // ESC to close
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  const close = () => {
+    try {
+      sessionStorage.setItem(SESSION_DISMISSED_KEY, "1");
+    } catch {}
+    setOpen(false);
   };
 
   const handleClaim = () => {
-    try { sessionStorage.setItem(SESSION_DISMISSED_KEY, "1"); } catch {}
+    try {
+      sessionStorage.setItem(SESSION_DISMISSED_KEY, "1");
+    } catch {}
     setOpen(false);
     onClaim();
   };
@@ -80,171 +124,140 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
   const greet = name || "you";
 
   const perks = [
-    { icon: "💬", label: "Unlimited chats — every model" },
-    { icon: "🖼️", label: "Unlimited image generation" },
-    { icon: "📊", label: "Unlimited slides & docs" },
-    { icon: "⚡", label: "Code Builder — no limits" },
+    "Unlimited chats — every model",
+    "Unlimited image generation",
+    "Unlimited slides & docs",
+    "Code Builder — no limits",
   ];
 
+  if (!open) return null;
+
   return (
-    <ResponsiveDialog open={open} onOpenChange={handleOpen}>
-      <ResponsiveDialogContent desktopClassName="!max-w-[400px] !p-0 !rounded-[28px] !border-0 !bg-transparent overflow-hidden">
-        <div className="sr-only">
-          <ResponsiveDialogTitle>50% off Megsy Pro</ResponsiveDialogTitle>
-          <ResponsiveDialogDescription>Personal offer reserved for your account.</ResponsiveDialogDescription>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Megsy Pro exclusive offer"
+      className="fixed inset-0 z-[100] flex flex-col bg-[#0a0a0e] text-white overflow-y-auto"
+    >
+      {/* Close */}
+      <button
+        onClick={close}
+        aria-label="Close"
+        className="absolute top-4 right-4 z-10 w-9 h-9 grid place-items-center rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
+      >
+        <X className="w-4 h-4" />
+      </button>
+
+      {/* ================= TOP — gold hero band ================= */}
+      <section
+        className="relative px-6 pt-14 pb-12 overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(165deg, #FFE8C9 0%, #FFD9A8 50%, #FFCC8A 100%)",
+        }}
+      >
+        {/* Eyebrow */}
+        <div className="flex items-center justify-center gap-2 text-[11px] font-bold tracking-[0.22em] text-[#7C2D12] uppercase">
+          <MegsyMark size={14} className="text-[#7C2D12]" />
+          <span>Megsy Exclusive</span>
         </div>
 
-        <div className="relative overflow-hidden rounded-t-[28px] sm:rounded-[28px] bg-[#0f0f12]">
-          {/* ============ TOP CREAM SECTION ============ */}
-          <div
-            className="relative overflow-hidden px-6 pt-6 pb-7"
-            style={{
-              background: "linear-gradient(160deg, #FFE8C9 0%, #FFD9A8 55%, #FFCC8A 100%)",
-            }}
+        <h1 className="mt-4 text-center text-[#0a0a0a] font-black tracking-tight text-[34px] sm:text-[42px] leading-[1.02]">
+          Reserved for {greet}
+        </h1>
+        <p className="mt-2 text-center text-[13px] sm:text-[14px] text-[#3a2a14] font-medium">
+          A personal offer · not a public promo
+        </p>
+
+        {/* Hero number */}
+        <div className="mt-8 flex items-end justify-center gap-3">
+          <span
+            className="font-black text-[#0a0a0a] leading-none tracking-tighter"
+            style={{ fontSize: "clamp(96px, 28vw, 168px)", letterSpacing: "-0.07em" }}
           >
-            {/* sparkle accents */}
-            <svg
-              className="absolute top-4 right-4 opacity-50"
-              width="14" height="14" viewBox="0 0 24 24" fill="none"
-            >
-              <path d="M12 2L13.5 10.5L22 12L13.5 13.5L12 22L10.5 13.5L2 12L10.5 10.5L12 2Z" fill="#B45309" />
-            </svg>
-            <svg
-              className="absolute top-16 right-16 opacity-30"
-              width="8" height="8" viewBox="0 0 24 24" fill="none"
-            >
-              <path d="M12 2L13.5 10.5L22 12L13.5 13.5L12 22L10.5 13.5L2 12L10.5 10.5L12 2Z" fill="#92400E" />
-            </svg>
+            50%
+          </span>
+          <span
+            className="font-black text-[#0a0a0a] leading-none pb-2"
+            style={{ fontSize: "clamp(28px, 7vw, 40px)" }}
+          >
+            OFF
+          </span>
+        </div>
 
-            {/* eyebrow */}
-            <div className="flex items-center gap-2 text-[10.5px] font-bold tracking-[0.18em] text-[#7C2D12] mb-3">
-              <span className="font-black">Megsy</span>
-              <span className="opacity-40">|</span>
-              <span>EXCLUSIVE · {greet.toUpperCase()}</span>
-            </div>
+        <p className="mt-4 text-center text-[12px] font-semibold tracking-wider text-[#5a3a14] uppercase">
+          1st month of Megsy Pro
+        </p>
 
-            <h2 className="text-[#1a1a1a] font-black text-[26px] leading-[1.05] tracking-tight">
-              Megsy Pro Sale
-            </h2>
-            <p className="mt-1.5 text-[12.5px] text-[#3a2a14] font-medium">
-              Ends in <span className="font-black text-[#7C2D12] font-mono tabular-nums">{expired ? "00:00" : fmt(remaining)}</span>
-            </p>
-
-            {/* big hero with orb */}
-            <div className="relative mt-5 flex items-end justify-between">
-              <div>
-                <div
-                  className="font-black text-[#0a0a0a] leading-none tracking-tighter"
-                  style={{ fontSize: "62px", letterSpacing: "-0.06em" }}
-                >
-                  50%
-                </div>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-[20px] font-black text-[#0a0a0a]">OFF</span>
-                  <span className="text-[11px] font-semibold text-[#5a3a14]">1st month</span>
-                </div>
-              </div>
-
-              {/* Decorative orb (CSS only — no asset needed) */}
-              <div className="relative w-[120px] h-[120px] -mr-2 -mb-2">
-                {/* outer ring */}
-                <div
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    background:
-                      "radial-gradient(circle at 30% 30%, #FFFBE9 0%, #F5C16C 35%, #C97B2A 70%, #7C2D12 100%)",
-                    boxShadow:
-                      "inset -10px -14px 30px rgba(124,45,18,0.55), inset 8px 10px 20px rgba(255,255,255,0.7), 0 12px 24px -8px rgba(124,45,18,0.45)",
-                  }}
-                />
-                {/* center glow */}
-                <div
-                  className="absolute inset-3 rounded-full"
-                  style={{
-                    background:
-                      "radial-gradient(circle at 50% 45%, rgba(255,255,255,0.5), rgba(255,200,120,0.1) 50%, transparent 75%)",
-                  }}
-                />
-                {/* Megsy mark */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 1L14.39 8.26L22 9.27L16.5 14.14L17.78 22L12 18.27L6.22 22L7.5 14.14L2 9.27L9.61 8.26L12 1Z"
-                      fill="#fff"
-                      stroke="#7C2D12"
-                      strokeWidth="0.6"
-                    />
-                  </svg>
-                </div>
-                {/* highlight bubble */}
-                <div className="absolute top-3 left-4 w-5 h-3.5 rounded-full bg-white/70 blur-[1px]" />
-              </div>
-            </div>
-          </div>
-
-          {/* ============ BOTTOM DARK SECTION ============ */}
-          <div className="relative bg-[#0f0f12] px-5 pt-5 pb-5">
-            <p className="text-[12.5px] text-white/55 px-1 mb-3">
-              Become a Megsy Pro and unlock:
-            </p>
-
-            <ul className="space-y-1">
-              {perks.map((p) => (
-                <li
-                  key={p.label}
-                  className="flex items-center gap-3 px-2 py-2 rounded-xl"
-                >
-                  <span className="w-9 h-9 grid place-items-center rounded-full bg-white/[0.06] border border-white/10 text-base shrink-0">
-                    {p.icon}
-                  </span>
-                  <span className="text-[13.5px] text-white/90 font-medium leading-tight">
-                    {p.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            {/* Special bonus row (gradient like the reference) */}
-            <div
-              className="relative mt-3 flex items-center gap-3 px-3 py-3 rounded-2xl overflow-hidden"
-              style={{
-                background:
-                  "linear-gradient(95deg, rgba(168,85,247,0.22) 0%, rgba(236,72,153,0.22) 100%)",
-                border: "1px solid rgba(236,72,153,0.35)",
-              }}
-            >
-              <span className="w-9 h-9 grid place-items-center rounded-full bg-gradient-to-br from-fuchsia-400 to-purple-500 text-base shrink-0 shadow-lg shadow-fuchsia-500/30">
-                🎁
-              </span>
-              <div className="flex-1 min-w-0">
-                <div className="text-[13px] text-white font-semibold leading-tight">
-                  Get <span className="text-fuchsia-300 font-black">3 months</span> bonus credits
-                </div>
-                <div className="text-[10.5px] text-white/55 mt-0.5">Megsy OS · agent runs 24/7</div>
-              </div>
-              <span className="text-[9px] font-black tracking-widest text-fuchsia-200 uppercase shrink-0">
-                Special
-              </span>
-            </div>
-
-            {/* CTA */}
-            <button
-              onClick={handleClaim}
-              disabled={expired}
-              className="w-full mt-4 py-3.5 rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 text-black font-bold text-[14px] tracking-tight active:scale-[0.98] transition-transform shadow-[0_10px_24px_-6px_rgba(245,158,11,0.5)] disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {expired ? "Offer expired" : "Claim my 50% off"}
-            </button>
-
-            <button
-              onClick={() => handleOpen(false)}
-              className="w-full mt-1 py-2 text-[11px] text-white/40 hover:text-white/65 transition-colors"
-            >
-              Maybe later
-            </button>
+        {/* Countdown */}
+        <div className="mt-6 flex justify-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0a0a0e]/90 text-white">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+            <span className="text-[11px] tracking-[0.18em] uppercase text-white/60">
+              Ends in
+            </span>
+            <span className="text-[14px] font-bold font-mono tabular-nums">
+              {expired ? "00:00" : fmt(remaining)}
+            </span>
           </div>
         </div>
-      </ResponsiveDialogContent>
-    </ResponsiveDialog>
+      </section>
+
+      {/* ================= MIDDLE — dark perks ================= */}
+      <section className="flex-1 px-6 py-10 sm:py-12 max-w-xl w-full mx-auto">
+        <h2 className="text-center text-white/55 text-[12px] tracking-[0.22em] uppercase font-bold mb-6">
+          Everything unlocked
+        </h2>
+
+        <ul className="space-y-3">
+          {perks.map((label) => (
+            <li
+              key={label}
+              className="flex items-center gap-4 px-4 py-4 rounded-2xl bg-white/[0.04] border border-white/[0.07]"
+            >
+              <MegsyMark size={18} className="text-amber-300 shrink-0" />
+              <span className="text-[15px] text-white/90 font-medium leading-tight">
+                {label}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        {/* Price */}
+        <div className="mt-10 text-center">
+          <div className="flex items-baseline justify-center gap-3">
+            <span className="text-[18px] text-white/35 line-through font-medium">
+              $58
+            </span>
+            <span className="text-white font-black tracking-tighter text-[56px] sm:text-[64px] leading-none">
+              $29
+            </span>
+            <span className="text-[14px] text-white/55 font-medium">/mo</span>
+          </div>
+          <p className="mt-2 text-[12px] text-white/45">
+            Then $58/mo · cancel anytime
+          </p>
+        </div>
+      </section>
+
+      {/* ================= BOTTOM — CTA ================= */}
+      <section className="sticky bottom-0 px-6 pb-[max(20px,env(safe-area-inset-bottom))] pt-4 bg-gradient-to-t from-[#0a0a0e] via-[#0a0a0e]/95 to-transparent">
+        <div className="max-w-xl mx-auto">
+          <button
+            onClick={handleClaim}
+            disabled={expired}
+            className="w-full py-4 rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 text-black font-bold text-[15px] tracking-tight active:scale-[0.99] transition-transform shadow-[0_18px_40px_-12px_rgba(245,158,11,0.55)] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {expired ? "Offer expired" : "Claim my 50% off"}
+          </button>
+          <button
+            onClick={close}
+            className="w-full mt-2 py-3 text-[12px] text-white/45 hover:text-white/75 transition-colors"
+          >
+            Maybe later
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }
