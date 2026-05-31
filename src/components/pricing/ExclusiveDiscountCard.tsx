@@ -8,17 +8,13 @@ import {
   ResponsiveDialogDescription,
 } from "@/components/ui/responsive-dialog";
 
-
 const SESSION_DEADLINE_KEY = "megsy_promo_deadline_v1";
 const SESSION_DISMISSED_KEY = "megsy_promo_dismissed_v1";
 const WINDOW_MINUTES = 15;
-const baseClaimedToday = 2847;
 
-const formatTime = (ms: number) => {
-  const total = Math.max(0, Math.floor(ms / 1000));
-  const m = Math.floor(total / 60).toString().padStart(2, "0");
-  const s = (total % 60).toString().padStart(2, "0");
-  return `${m}:${s}`;
+const fmt = (ms: number) => {
+  const t = Math.max(0, Math.floor(ms / 1000));
+  return `${String(Math.floor(t / 60)).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
 };
 
 interface Props {
@@ -26,10 +22,9 @@ interface Props {
 }
 
 export default function ExclusiveDiscountCard({ onClaim }: Props) {
-  const [name, setName] = useState<string>("");
-  const [now, setNow] = useState<number>(() => Date.now());
-  const [open, setOpen] = useState<boolean>(false);
-  const [claimed] = useState<number>(() => baseClaimedToday + Math.floor(Math.random() * 7));
+  const [name, setName] = useState("");
+  const [now, setNow] = useState(() => Date.now());
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,10 +41,8 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
   }, []);
 
   useEffect(() => {
-    try {
-      if (sessionStorage.getItem(SESSION_DISMISSED_KEY) === "1") return;
-    } catch {}
-    const t = window.setTimeout(() => setOpen(true), 600);
+    try { if (sessionStorage.getItem(SESSION_DISMISSED_KEY) === "1") return; } catch {}
+    const t = window.setTimeout(() => setOpen(true), 500);
     return () => window.clearTimeout(t);
   }, []);
 
@@ -63,9 +56,7 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
       const fresh = Date.now() + WINDOW_MINUTES * 60 * 1000;
       sessionStorage.setItem(SESSION_DEADLINE_KEY, String(fresh));
       return fresh;
-    } catch {
-      return Date.now() + WINDOW_MINUTES * 60 * 1000;
-    }
+    } catch { return Date.now() + WINDOW_MINUTES * 60 * 1000; }
   }, []);
 
   useEffect(() => {
@@ -74,10 +65,8 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
     return () => window.clearInterval(id);
   }, [open]);
 
-  const handleOpenChange = (next: boolean) => {
-    if (!next) {
-      try { sessionStorage.setItem(SESSION_DISMISSED_KEY, "1"); } catch {}
-    }
+  const handleOpen = (next: boolean) => {
+    if (!next) { try { sessionStorage.setItem(SESSION_DISMISSED_KEY, "1"); } catch {} }
     setOpen(next);
   };
 
@@ -89,128 +78,117 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
 
   const remaining = deadline - now;
   const expired = remaining <= 0;
-  const pct = Math.max(0, Math.min(100, (remaining / (WINDOW_MINUTES * 60 * 1000)) * 100));
-  const greeting = name ? `${name},` : "Hey there,";
+  const greet = name || "you";
 
   return (
-    <ResponsiveDialog open={open} onOpenChange={handleOpenChange}>
-      <ResponsiveDialogContent
-        desktopClassName="!max-w-lg !p-0 !rounded-2xl border-amber-400/20 bg-[#0a0a14] text-white"
-      >
+    <ResponsiveDialog open={open} onOpenChange={handleOpen}>
+      <ResponsiveDialogContent desktopClassName="!max-w-md !p-0 !rounded-[28px] !border-0 !bg-transparent">
         <div className="sr-only">
-          <ResponsiveDialogTitle>Exclusive 50% discount</ResponsiveDialogTitle>
-          <ResponsiveDialogDescription>
-            A personal offer reserved for your account.
-          </ResponsiveDialogDescription>
+          <ResponsiveDialogTitle>Your 50% discount</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>Personal offer reserved for your account.</ResponsiveDialogDescription>
         </div>
 
+        <div className="relative bg-[#0b0b0f] text-white overflow-hidden rounded-t-[28px] sm:rounded-[28px]">
+          {/* Top gold accent */}
+          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+          {/* Ambient amber glow */}
+          <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[420px] h-[420px] rounded-full bg-amber-500/15 blur-[100px]" />
 
-        <div className="relative bg-gradient-to-br from-[#0a0a14] via-[#13101f] to-[#0a0a14] text-white">
           <style>{`
-            @keyframes ribbon-shine-modal {
-              0% { transform: translateX(-120%); }
-              100% { transform: translateX(220%); }
+            @keyframes shimmer-line {
+              0% { transform: translateX(-100%); }
+              100% { transform: translateX(100%); }
             }
           `}</style>
 
-          {/* Gradient hairline at top */}
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-400/80 to-transparent" />
-
-          {/* Ribbon */}
-          <div className="px-5 sm:px-7 pt-5">
-            <div className="relative inline-flex overflow-hidden px-3 py-1 rounded-md bg-gradient-to-b from-amber-400 to-amber-600 text-[10px] font-black tracking-[0.18em] text-black">
-              EXCLUSIVE · RESERVED FOR YOU
-              <span
-                className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent"
-                style={{ animation: "ribbon-shine-modal 2.6s ease-in-out infinite" }}
-              />
+          <div className="relative px-7 pt-9 pb-7 text-center">
+            {/* tiny eyebrow */}
+            <div className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.28em] text-amber-300/80 uppercase mb-7">
+              <span className="h-px w-6 bg-amber-300/40" />
+              Personal Offer
+              <span className="h-px w-6 bg-amber-300/40" />
             </div>
-          </div>
 
-          {/* Title + copy */}
-          <div className="px-5 sm:px-7 pt-3 pb-2">
-            <h2 className="font-black leading-[1.1] text-[clamp(1.35rem,5vw,1.9rem)]">
-              {greeting} here's <span className="text-amber-400">50% OFF</span>
-              <br />
-              <span className="bg-gradient-to-r from-amber-300 via-fuchsia-400 to-emerald-300 bg-clip-text text-transparent">
-                reserved just for you
-              </span>
+            {/* Hero number */}
+            <div className="relative inline-block">
+              <div
+                className="font-black leading-none tracking-tighter bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent"
+                style={{ fontSize: "clamp(5.5rem, 22vw, 8rem)", letterSpacing: "-0.06em" }}
+              >
+                50%
+              </div>
+              <div className="absolute -right-1 top-2 text-[10px] font-bold tracking-[0.2em] text-amber-300/90 rotate-[8deg]">
+                OFF
+              </div>
+            </div>
+
+            <h2
+              className="mt-4 font-medium text-white/95 leading-tight"
+              style={{ fontSize: "clamp(1.05rem, 4vw, 1.25rem)", letterSpacing: "-0.01em" }}
+            >
+              Reserved for <span className="text-amber-300 font-semibold">{greet}</span>
             </h2>
-            <p className="mt-2 text-[12.5px] sm:text-sm text-white/70 leading-relaxed">
-              This isn't a public offer — it was opened for your account right now.
-              Leave and it goes back to others in line.
+
+            <p className="mt-2 text-[12.5px] text-white/45 leading-relaxed max-w-[280px] mx-auto">
+              Not a public promo. Opened for your account only.
             </p>
-          </div>
 
-          {/* Unlimited grid */}
-          <div className="px-5 sm:px-7">
-            <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5">
-              {[
-                "Unlimited chats",
-                "Unlimited images",
-                "Unlimited slides",
-                "Unlimited docs",
-                "Unlimited Code",
-                "Megsy OS 24/7",
-              ].map((t) => (
-                <li key={t} className="flex items-center gap-1.5 text-[12px] font-semibold text-white/90">
-                  <span className="text-amber-300 font-black">∞</span>
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Subtle divider */}
+            <div className="mt-7 mb-6 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-          {/* Save + countdown */}
-          <div className="px-5 sm:px-7 pt-4">
-            <div className="rounded-xl bg-white/[0.04] border border-white/10 p-4">
-              <div className="flex items-end justify-between gap-3 mb-3">
-                <div>
-                  <div className="text-[10px] text-white/50 uppercase tracking-wider mb-1">You save / year</div>
-                  <div className="font-black text-3xl text-amber-300 leading-none">$348</div>
-                  <div className="text-[10px] text-white/50 mt-1">
-                    Less than <span className="text-white font-bold">$0.79 / day</span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Ends in</div>
-                  <div className="font-mono font-black text-amber-300 text-2xl tabular-nums">
-                    {expired ? "00:00" : formatTime(remaining)}
-                  </div>
-                </div>
-              </div>
-              <div className="h-1 rounded-full bg-white/10 overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-amber-400 to-red-400"
-                  animate={{ width: `${pct}%` }}
-                  transition={{ duration: 0.4 }}
-                />
-              </div>
+            {/* Price row */}
+            <div className="flex items-baseline justify-center gap-3 mb-1">
+              <span className="text-xl text-white/30 line-through font-medium">$58</span>
+              <span className="text-5xl font-black text-white tracking-tight tabular-nums">$29</span>
+              <span className="text-sm text-white/50 font-medium">/mo</span>
             </div>
-          </div>
+            <div className="text-[11px] text-white/40 tracking-wide">
+              Pro · Unlimited everything
+            </div>
 
-          {/* CTAs */}
-          <div className="px-5 sm:px-7 pt-4 pb-5">
+            {/* Countdown — minimal */}
+            <div className="mt-6 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-400" />
+              </span>
+              <span className="text-[10.5px] text-white/55 uppercase tracking-[0.15em]">Expires in</span>
+              <span className="text-[12.5px] font-mono font-bold text-white tabular-nums">
+                {expired ? "00:00" : fmt(remaining)}
+              </span>
+            </div>
+
+            {/* CTA */}
             <button
               onClick={handleClaim}
               disabled={expired}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-black font-black text-sm tracking-wide active:scale-[0.99] transition-transform shadow-lg shadow-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative mt-7 w-full overflow-hidden py-4 rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 text-black font-bold text-[14.5px] tracking-tight active:scale-[0.98] transition-transform shadow-[0_10px_30px_-8px_rgba(245,158,11,0.5)] disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {expired ? "Offer expired" : "Claim my 50% — Pro $29/mo"}
-            </button>
-            <button
-              onClick={() => handleOpenChange(false)}
-              className="w-full mt-1.5 py-2 text-[11px] text-white/45 hover:text-white/70 transition-colors"
-            >
-              No thanks, I'll pay full price later
+              <span className="relative z-10">
+                {expired ? "Offer expired" : "Claim my discount"}
+              </span>
+              <span
+                aria-hidden
+                className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none"
+                style={{ animation: "shimmer-line 2.8s ease-in-out infinite" }}
+              />
             </button>
 
-            <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between text-[10.5px] text-white/50">
-              <span>Cancel anytime · No commitment</span>
-              <span>
-                +<span className="text-white font-bold">{claimed.toLocaleString("en-US")}</span> this week
-              </span>
-            </div>
+            <button
+              onClick={() => handleOpen(false)}
+              className="mt-2 w-full py-2 text-[11.5px] text-white/35 hover:text-white/60 transition-colors"
+            >
+              Maybe later
+            </button>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="mt-4 text-[10.5px] text-white/30 tracking-wide"
+            >
+              Cancel anytime · No commitment
+            </motion.div>
           </div>
         </div>
       </ResponsiveDialogContent>
