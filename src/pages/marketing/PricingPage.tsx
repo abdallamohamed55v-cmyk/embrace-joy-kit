@@ -105,7 +105,6 @@ const PLANS: PlanCardConfig[] = [
     yearlyCredits: "Unlimited yearly • priority queue",
     features: [
       "Everything in Pro — unlimited",
-      "Unlimited video generation (premium)",
       "Priority queue — 3× faster generations",
       "Advanced presets & custom branding",
       
