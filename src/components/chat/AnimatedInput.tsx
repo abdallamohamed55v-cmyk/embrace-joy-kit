@@ -293,7 +293,52 @@ const AnimatedInput = ({ value, onChange, onSend, onCancel, onPlusClick, disable
             onClose={() => setModelPickerOpen(false)}
           />
         )}
+        {slashOpen && filteredSlash.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 380, damping: 28 }}
+            className="absolute bottom-full left-0 right-0 mb-2 z-50 mx-1"
+          >
+            <div className="rounded-2xl border border-border bg-popover/95 backdrop-blur-xl shadow-2xl overflow-hidden max-h-[280px] overflow-y-auto">
+              <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border/50">
+                Services
+              </div>
+              <div className="p-1">
+                {filteredSlash.map((cmd, i) => {
+                  const Icon = cmd.Icon;
+                  const active = i === slashIndex;
+                  return (
+                    <button
+                      key={cmd.id}
+                      type="button"
+                      onMouseEnter={() => setSlashIndex(i)}
+                      onClick={() => triggerSlash(cmd.id)}
+                      className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-left transition-colors ${
+                        active ? "bg-accent text-accent-foreground" : "text-popover-foreground hover:bg-accent/50"
+                      }`}
+                    >
+                      {Icon && (
+                        <span className="shrink-0 w-7 h-7 rounded-md bg-foreground/[0.06] flex items-center justify-center">
+                          <Icon className="w-3.5 h-3.5" strokeWidth={2} />
+                        </span>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[13px] font-medium leading-tight">{cmd.label}</div>
+                        {cmd.description && (
+                          <div className="text-[11px] text-muted-foreground truncate mt-0.5">{cmd.description}</div>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
+
       {/* Floating chips ABOVE the input (no border / no surface) */}
       {headerSlot && (
         <div className="mb-2 flex justify-start pointer-events-auto px-1">
