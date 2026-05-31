@@ -4165,45 +4165,97 @@ Ask me anything to get started!`;
                 ];
                 const color = ACCENT_COLORS[mobileGreetingColor % ACCENT_COLORS.length];
                 const phrase = RETURNING_GREETINGS[0];
+                const ServiceChips = (
+                  <div className="flex flex-wrap items-center justify-center gap-1.5 mt-5 px-1 max-w-xl mx-auto">
+                    {([
+                      { id: "megsy-os" as const, label: "Megsy OS", Icon: Atom },
+                      { id: "deep-research" as const, label: "Deep Research", Icon: Telescope },
+                      { id: "slides" as const, label: "Slides", Icon: Presentation },
+                      { id: "slides-images" as const, label: "Slides with images", Icon: Projector },
+                      { id: "learning" as const, label: "Learning", Icon: GraduationCap },
+                      { id: "docs" as const, label: "Docs", Icon: NotebookPen },
+                    ]).map((a) => {
+                      const active =
+                        a.id === "docs" ? selectedAgent?.id === "docs" :
+                        a.id === "megsy-os" ? chatMode === "operator" :
+                        chatMode === a.id;
+                      return (
+                        <button
+                          key={a.id}
+                          type="button"
+                          onClick={() => {
+                            if (a.id === "docs") {
+                              if (active) { setSelectedAgent(null); }
+                              else {
+                                setChatMode("normal");
+                                import("@/lib/agentRegistry").then(({ AGENTS }) => {
+                                  const def = AGENTS.find((x) => x.id === "docs");
+                                  if (def) setSelectedAgent(def);
+                                });
+                              }
+                            } else if (a.id === "megsy-os") {
+                              if (active) handleModeChange("normal");
+                              else tryActivateMegsyOs();
+                            } else {
+                              handleModeChange(active ? "normal" : (a.id as ChatMode));
+                            }
+                          }}
+                          className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full border text-[12px] font-medium shrink-0 transition-colors ${
+                            active
+                              ? "border-primary/60 bg-primary/10 text-primary"
+                              : "border-border/60 bg-background/40 backdrop-blur text-foreground/75 hover:text-foreground hover:bg-foreground/[0.05]"
+                          }`}
+                        >
+                          <a.Icon className="w-3.5 h-3.5" strokeWidth={2} />
+                          <span>{a.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
                 return (
-                  <motion.div
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, ease: "easeOut" }}
-                    className="md:hidden w-full text-center px-2"
-                  >
-                    <p className="font-display text-[22px] sm:text-[26px] font-light tracking-tight text-foreground/85 leading-tight break-words px-2 max-w-full">
-                      {phrase.plain}{" "}
-                      <span className={`${color} font-medium capitalize`}>{phrase.accent}</span>
-                      {phrase.tail}
-                    </p>
-                  </motion.div>
+                  <div className="w-full flex flex-col items-center">
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.45, ease: "easeOut" }}
+                      className="md:hidden w-full text-center px-2"
+                    >
+                      <p className="font-display text-[22px] sm:text-[26px] font-light tracking-tight text-foreground/85 leading-tight break-words px-2 max-w-full">
+                        {phrase.plain}{" "}
+                        <span className={`${color} font-medium capitalize`}>{phrase.accent}</span>
+                        {phrase.tail}
+                      </p>
+                      {ServiceChips}
+                    </motion.div>
+
+                    {/* Desktop: Claude-style greeting + quick chips */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, ease: "easeOut" }}
+                      className="hidden md:flex flex-col items-center w-full max-w-2xl"
+                    >
+                      <h1 className="font-sora text-3xl md:text-4xl lg:text-[44px] font-light tracking-tight text-foreground/90 flex items-center gap-3 max-w-full px-4 text-center capitalize">
+                        {(() => {
+                          const raw = userName || "friend";
+                          const dname = raw.charAt(0).toUpperCase() + raw.slice(1);
+                          const h = new Date().getHours();
+                          const part = h < 5 ? "Late night" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 21 ? "Good evening" : "Late night";
+                          if (isFirstVisit) {
+                            return `${part}, ${dname}`;
+                          }
+                          const ROT = [`${part}, ${dname}`, `How are you, ${dname}?`, `Let's cook something, ${dname}`, `Welcome back, ${dname}`];
+                          return ROT[returningGreetingIdx % ROT.length];
+                        })()}
+                      </h1>
+                      {ServiceChips}
+                    </motion.div>
+                  </div>
                 );
               })()}
 
 
-              {/* Desktop: Claude-style greeting + quick chips */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-                className="hidden md:flex flex-col items-center w-full max-w-2xl"
-              >
-                <h1 className="font-sora text-3xl md:text-4xl lg:text-[44px] font-light tracking-tight text-foreground/90 flex items-center gap-3 max-w-full px-4 text-center capitalize">
-                  {(() => {
-                    const raw = userName || "friend";
-                    const name = raw.charAt(0).toUpperCase() + raw.slice(1);
-                    const h = new Date().getHours();
-                    const part = h < 5 ? "Late night" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 21 ? "Good evening" : "Late night";
-                    if (isFirstVisit) {
-                      return `${part}, ${name}`;
-                    }
-                    const ROT = [`${part}, ${name}`, `How are you, ${name}?`, `Let's cook something, ${name}`, `Welcome back, ${name}`];
-                    return ROT[returningGreetingIdx % ROT.length];
-                  })()}
-                </h1>
-
-              </motion.div>
             </div>
           ) : (
             <div className="max-w-3xl mx-auto pt-20 pb-56 md:pb-64 px-4 md:px-6 space-y-2">
@@ -5015,7 +5067,7 @@ Ask me anything to get started!`;
 
                 {/* Desktop-only mode chips below the input (replaces the agents
                     list inside the + menu on md+). */}
-                <div className={`${messages.length === 0 ? "flex" : "hidden"} flex-wrap items-center justify-center gap-1.5 mt-2 px-1`}>
+                <div className={`${messages.length === 0 ? "hidden md:flex" : "hidden"} flex-wrap items-center justify-center gap-1.5 mt-2 px-1`}>
                   {([
                     { id: "megsy-os" as const, label: "Megsy OS", Icon: Atom },
                     { id: "deep-research" as const, label: "Deep Research", Icon: Telescope },
