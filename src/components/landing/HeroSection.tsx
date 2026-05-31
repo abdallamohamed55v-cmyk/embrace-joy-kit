@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import FancyButton from "@/components/branding/FancyButton";
+import TryBeforeSignup from "@/components/landing/TryBeforeSignup";
 import { useLandingContent } from "@/lib/landing/LandingContentContext";
 
 const heroVideos = [
@@ -64,6 +65,8 @@ const HeroSection = () => {
             </span>
           </button>
         </motion.div>
+
+        <TryBeforeSignup />
 
       </div>
 

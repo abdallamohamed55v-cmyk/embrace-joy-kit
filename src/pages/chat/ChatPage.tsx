@@ -2359,6 +2359,22 @@ const ChatPage = () => {
 
   const handleSend = () => handleSendWithText();
 
+  // After signup, auto-send the prompt the user typed on the landing page.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("megsy_pending_first_prompt");
+      if (!raw) return;
+      sessionStorage.removeItem("megsy_pending_first_prompt");
+      const { prompt, ts } = JSON.parse(raw) as { prompt: string; intent?: string; ts: number };
+      // Ignore stale prompts older than 30 min
+      if (!prompt || Date.now() - ts > 30 * 60 * 1000) return;
+      const t = window.setTimeout(() => { handleSendWithText(prompt); }, 600);
+      return () => window.clearTimeout(t);
+    } catch { /* noop */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
   const handleNewChat = () => {
     slidesGenerationTokenRef.current += 1;
     Object.values(slidesTimeoutsRef.current).forEach((timer) => window.clearTimeout(timer));
