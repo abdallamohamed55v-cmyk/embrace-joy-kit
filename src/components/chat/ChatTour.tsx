@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Joyride, { CallBackProps, STATUS, Step } from "react-joyride";
+import { Joyride, STATUS, type EventData, type Step } from "react-joyride";
 
 const STORAGE_KEY = "megsy_chat_tour_v1";
 
