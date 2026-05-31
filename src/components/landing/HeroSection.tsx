@@ -66,6 +66,8 @@ const HeroSection = () => {
           </button>
         </motion.div>
 
+        <TryBeforeSignup />
+
       </div>
 
       <div className="relative z-0 mt-8 flex w-full max-w-[1500px] items-end justify-center gap-2 px-4 pb-4 md:mt-10 md:gap-5">
