@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ResponsiveDialog,
@@ -80,114 +79,151 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
   const expired = remaining <= 0;
   const greet = name || "you";
 
+  const perks = [
+    { icon: "💬", label: "Unlimited chats — every model" },
+    { icon: "🖼️", label: "Unlimited image generation" },
+    { icon: "📊", label: "Unlimited slides & docs" },
+    { icon: "⚡", label: "Code Builder — no limits" },
+  ];
+
   return (
     <ResponsiveDialog open={open} onOpenChange={handleOpen}>
-      <ResponsiveDialogContent desktopClassName="!max-w-md !p-0 !rounded-[28px] !border-0 !bg-transparent">
+      <ResponsiveDialogContent desktopClassName="!max-w-[400px] !p-0 !rounded-[28px] !border-0 !bg-transparent overflow-hidden">
         <div className="sr-only">
-          <ResponsiveDialogTitle>Your 50% discount</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>50% off Megsy Pro</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>Personal offer reserved for your account.</ResponsiveDialogDescription>
         </div>
 
-        <div className="relative bg-[#0a0a0e] text-white overflow-hidden rounded-t-[28px] sm:rounded-[28px] border border-amber-400/15">
-          {/* Premium gold header band */}
-          <div className="relative h-[78px] overflow-hidden">
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(120% 100% at 50% 0%, rgba(251,191,36,0.45) 0%, rgba(180,83,9,0.25) 45%, rgba(10,10,14,0) 75%)",
-              }}
-            />
-            {/* shimmer diagonal */}
-            <div
-              className="absolute inset-0 opacity-60"
-              style={{
-                background:
-                  "linear-gradient(115deg, transparent 30%, rgba(255,215,0,0.22) 50%, transparent 70%)",
-                animation: "header-shine 4s ease-in-out infinite",
-              }}
-            />
-            {/* gold hairline at bottom of band */}
-            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-amber-400/70 to-transparent" />
+        <div className="relative overflow-hidden rounded-t-[28px] sm:rounded-[28px] bg-[#0f0f12]">
+          {/* ============ TOP CREAM SECTION ============ */}
+          <div
+            className="relative overflow-hidden px-6 pt-6 pb-7"
+            style={{
+              background: "linear-gradient(160deg, #FFE8C9 0%, #FFD9A8 55%, #FFCC8A 100%)",
+            }}
+          >
+            {/* sparkle accents */}
+            <svg
+              className="absolute top-4 right-4 opacity-50"
+              width="14" height="14" viewBox="0 0 24 24" fill="none"
+            >
+              <path d="M12 2L13.5 10.5L22 12L13.5 13.5L12 22L10.5 13.5L2 12L10.5 10.5L12 2Z" fill="#B45309" />
+            </svg>
+            <svg
+              className="absolute top-16 right-16 opacity-30"
+              width="8" height="8" viewBox="0 0 24 24" fill="none"
+            >
+              <path d="M12 2L13.5 10.5L22 12L13.5 13.5L12 22L10.5 13.5L2 12L10.5 10.5L12 2Z" fill="#92400E" />
+            </svg>
 
-            {/* eyebrow centered in band */}
-            <div className="relative h-full flex items-center justify-center">
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/40 border border-amber-300/30 backdrop-blur-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-300 shadow-[0_0_8px_rgba(251,191,36,0.9)]" />
-                <span className="text-[10px] font-bold tracking-[0.28em] text-amber-200 uppercase">
-                  Exclusive · Personal Offer
-                </span>
+            {/* eyebrow */}
+            <div className="flex items-center gap-2 text-[10.5px] font-bold tracking-[0.18em] text-[#7C2D12] mb-3">
+              <span className="font-black">Megsy</span>
+              <span className="opacity-40">|</span>
+              <span>EXCLUSIVE · {greet.toUpperCase()}</span>
+            </div>
+
+            <h2 className="text-[#1a1a1a] font-black text-[26px] leading-[1.05] tracking-tight">
+              Megsy Pro Sale
+            </h2>
+            <p className="mt-1.5 text-[12.5px] text-[#3a2a14] font-medium">
+              Ends in <span className="font-black text-[#7C2D12] font-mono tabular-nums">{expired ? "00:00" : fmt(remaining)}</span>
+            </p>
+
+            {/* big hero with orb */}
+            <div className="relative mt-5 flex items-end justify-between">
+              <div>
+                <div
+                  className="font-black text-[#0a0a0a] leading-none tracking-tighter"
+                  style={{ fontSize: "62px", letterSpacing: "-0.06em" }}
+                >
+                  50%
+                </div>
+                <div className="flex items-baseline gap-2 mt-1">
+                  <span className="text-[20px] font-black text-[#0a0a0a]">OFF</span>
+                  <span className="text-[11px] font-semibold text-[#5a3a14]">1st month</span>
+                </div>
+              </div>
+
+              {/* Decorative orb (CSS only — no asset needed) */}
+              <div className="relative w-[120px] h-[120px] -mr-2 -mb-2">
+                {/* outer ring */}
+                <div
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background:
+                      "radial-gradient(circle at 30% 30%, #FFFBE9 0%, #F5C16C 35%, #C97B2A 70%, #7C2D12 100%)",
+                    boxShadow:
+                      "inset -10px -14px 30px rgba(124,45,18,0.55), inset 8px 10px 20px rgba(255,255,255,0.7), 0 12px 24px -8px rgba(124,45,18,0.45)",
+                  }}
+                />
+                {/* center glow */}
+                <div
+                  className="absolute inset-3 rounded-full"
+                  style={{
+                    background:
+                      "radial-gradient(circle at 50% 45%, rgba(255,255,255,0.5), rgba(255,200,120,0.1) 50%, transparent 75%)",
+                  }}
+                />
+                {/* Megsy mark */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 1L14.39 8.26L22 9.27L16.5 14.14L17.78 22L12 18.27L6.22 22L7.5 14.14L2 9.27L9.61 8.26L12 1Z"
+                      fill="#fff"
+                      stroke="#7C2D12"
+                      strokeWidth="0.6"
+                    />
+                  </svg>
+                </div>
+                {/* highlight bubble */}
+                <div className="absolute top-3 left-4 w-5 h-3.5 rounded-full bg-white/70 blur-[1px]" />
               </div>
             </div>
           </div>
 
-          <style>{`
-            @keyframes shimmer-line {
-              0% { transform: translateX(-100%); }
-              100% { transform: translateX(100%); }
-            }
-            @keyframes header-shine {
-              0%, 100% { transform: translateX(-15%); }
-              50% { transform: translateX(15%); }
-            }
-          `}</style>
-
-          <div className="relative px-7 pt-8 pb-7 text-center">
-            {/* Hero number */}
-            <div className="relative inline-flex items-start">
-              <div
-                className="font-black leading-none tracking-tighter bg-gradient-to-b from-amber-100 via-amber-300 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_4px_24px_rgba(251,191,36,0.25)]"
-                style={{ fontSize: "clamp(5rem, 20vw, 7rem)", letterSpacing: "-0.06em" }}
-              >
-                50
-              </div>
-              <div className="flex flex-col items-start ml-1 mt-2">
-                <span
-                  className="font-black leading-none bg-gradient-to-b from-amber-100 via-amber-300 to-amber-600 bg-clip-text text-transparent"
-                  style={{ fontSize: "clamp(2rem, 8vw, 2.75rem)" }}
-                >
-                  %
-                </span>
-                <span className="text-[10px] font-black tracking-[0.25em] text-amber-300/90 mt-1.5">
-                  OFF
-                </span>
-              </div>
-            </div>
-
-            <h2
-              className="mt-3 font-medium text-white/95 leading-tight"
-              style={{ fontSize: "clamp(1rem, 3.8vw, 1.2rem)", letterSpacing: "-0.01em" }}
-            >
-              Reserved for <span className="text-amber-300 font-semibold">{greet}</span>
-            </h2>
-
-            <p className="mt-1.5 text-[12px] text-white/45 leading-relaxed max-w-[270px] mx-auto">
-              Not a public promo · opened for your account only
+          {/* ============ BOTTOM DARK SECTION ============ */}
+          <div className="relative bg-[#0f0f12] px-5 pt-5 pb-5">
+            <p className="text-[12.5px] text-white/55 px-1 mb-3">
+              Become a Megsy Pro and unlock:
             </p>
 
+            <ul className="space-y-1">
+              {perks.map((p) => (
+                <li
+                  key={p.label}
+                  className="flex items-center gap-3 px-2 py-2 rounded-xl"
+                >
+                  <span className="w-9 h-9 grid place-items-center rounded-full bg-white/[0.06] border border-white/10 text-base shrink-0">
+                    {p.icon}
+                  </span>
+                  <span className="text-[13.5px] text-white/90 font-medium leading-tight">
+                    {p.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
 
-            {/* Subtle divider */}
-            <div className="mt-7 mb-6 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-            {/* Price row */}
-            <div className="flex items-baseline justify-center gap-3 mb-1">
-              <span className="text-xl text-white/30 line-through font-medium">$58</span>
-              <span className="text-5xl font-black text-white tracking-tight tabular-nums">$29</span>
-              <span className="text-sm text-white/50 font-medium">/mo</span>
-            </div>
-            <div className="text-[11px] text-white/40 tracking-wide">
-              Pro · Unlimited everything
-            </div>
-
-            {/* Countdown — minimal */}
-            <div className="mt-6 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-400" />
+            {/* Special bonus row (gradient like the reference) */}
+            <div
+              className="relative mt-3 flex items-center gap-3 px-3 py-3 rounded-2xl overflow-hidden"
+              style={{
+                background:
+                  "linear-gradient(95deg, rgba(168,85,247,0.22) 0%, rgba(236,72,153,0.22) 100%)",
+                border: "1px solid rgba(236,72,153,0.35)",
+              }}
+            >
+              <span className="w-9 h-9 grid place-items-center rounded-full bg-gradient-to-br from-fuchsia-400 to-purple-500 text-base shrink-0 shadow-lg shadow-fuchsia-500/30">
+                🎁
               </span>
-              <span className="text-[10.5px] text-white/55 uppercase tracking-[0.15em]">Expires in</span>
-              <span className="text-[12.5px] font-mono font-bold text-white tabular-nums">
-                {expired ? "00:00" : fmt(remaining)}
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] text-white font-semibold leading-tight">
+                  Get <span className="text-fuchsia-300 font-black">3 months</span> bonus credits
+                </div>
+                <div className="text-[10.5px] text-white/55 mt-0.5">Megsy OS · agent runs 24/7</div>
+              </div>
+              <span className="text-[9px] font-black tracking-widest text-fuchsia-200 uppercase shrink-0">
+                Special
               </span>
             </div>
 
@@ -195,33 +231,17 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             <button
               onClick={handleClaim}
               disabled={expired}
-              className="group relative mt-7 w-full overflow-hidden py-4 rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 text-black font-bold text-[14.5px] tracking-tight active:scale-[0.98] transition-transform shadow-[0_10px_30px_-8px_rgba(245,158,11,0.5)] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full mt-4 py-3.5 rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 text-black font-bold text-[14px] tracking-tight active:scale-[0.98] transition-transform shadow-[0_10px_24px_-6px_rgba(245,158,11,0.5)] disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <span className="relative z-10">
-                {expired ? "Offer expired" : "Claim my discount"}
-              </span>
-              <span
-                aria-hidden
-                className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none"
-                style={{ animation: "shimmer-line 2.8s ease-in-out infinite" }}
-              />
+              {expired ? "Offer expired" : "Claim my 50% off"}
             </button>
 
             <button
               onClick={() => handleOpen(false)}
-              className="mt-2 w-full py-2 text-[11.5px] text-white/35 hover:text-white/60 transition-colors"
+              className="w-full mt-1 py-2 text-[11px] text-white/40 hover:text-white/65 transition-colors"
             >
               Maybe later
             </button>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="mt-4 text-[10.5px] text-white/30 tracking-wide"
-            >
-              Cancel anytime · No commitment
-            </motion.div>
           </div>
         </div>
       </ResponsiveDialogContent>
