@@ -1,11 +1,19 @@
 import { useState, useEffect, useRef, useMemo, useCallback, useDeferredValue } from "react";
-import { Plus, ArrowUp, Square, X, Sparkles, Loader2 } from "lucide-react";
+import { Plus, ArrowUp, Square, X, Sparkles, Loader2, type LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import MentionDropdown from "./MentionDropdown";
 import ModelPickerDropdown from "@/components/model-picker/ModelPickerDropdown";
 import type { AgentDef, AgentModel } from "@/lib/agentRegistry";
 import { getAgentById } from "@/lib/agentRegistry";
 import { TypingAnimation } from "@/components/ui/typing-animation";
+
+export interface SlashCommand {
+  id: string;
+  label: string;
+  description?: string;
+  Icon?: LucideIcon;
+}
+
 
 interface SmartQuestion {
   title: string;
