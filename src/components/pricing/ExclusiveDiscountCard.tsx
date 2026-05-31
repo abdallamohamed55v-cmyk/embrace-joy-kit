@@ -103,7 +103,7 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-y-auto overscroll-contain"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -114,7 +114,7 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
         >
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-black/75 backdrop-blur-md"
+            className="fixed inset-0 bg-black/75 backdrop-blur-md"
             onClick={handleClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -127,13 +127,13 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.97 }}
             transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-2xl"
+            className="relative w-full max-w-2xl my-auto"
           >
             {/* Soft glow */}
             <div className="absolute inset-0 -z-10 blur-3xl opacity-60 bg-gradient-to-r from-amber-500/40 via-fuchsia-500/30 to-emerald-500/40 rounded-[32px]" />
 
             <div
-              className="relative overflow-hidden rounded-[28px] p-[1.5px]"
+              className="relative overflow-hidden rounded-t-[24px] sm:rounded-[28px] p-[1.5px]"
               style={{
                 background:
                   "conic-gradient(from var(--angle,0deg), #FFD700, #ff5e9c, #7c3aed, #10b981, #FFD700)",
@@ -149,7 +149,8 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
                 }
               `}</style>
 
-              <div className="relative rounded-[26px] bg-gradient-to-br from-[#0a0a14] via-[#13101f] to-[#0a0a14] text-white p-6 sm:p-9">
+              <div className="relative rounded-t-[22px] sm:rounded-[26px] bg-gradient-to-br from-[#0a0a14] via-[#13101f] to-[#0a0a14] text-white p-5 sm:p-9 max-h-[100dvh] sm:max-h-[88dvh] overflow-y-auto">
+
                 {/* Close */}
                 <button
                   onClick={handleClose}
