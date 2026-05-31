@@ -284,7 +284,19 @@ const PricingPage = () => {
         <h1 className="text-base font-bold tracking-tight">Pricing</h1>
       </div>
 
-      {/* Hero */}
+      {/* Welcome promo banner — 50% off on Pro and above */}
+      <div className="px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/15 via-fuchsia-500/10 to-amber-500/15 px-4 sm:px-6 py-3 sm:py-3.5 flex flex-wrap items-center justify-center gap-2 text-center">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-black tracking-widest">
+            WELCOME50
+          </span>
+          <span className="text-sm sm:text-base font-bold">
+            خصم 50% على جميع الباقات من <span className="text-primary">Pro</span> فما فوق
+          </span>
+          <span className="text-xs sm:text-sm text-muted-foreground">— لفترة محدودة</span>
+        </div>
+      </div>
+
       <section className="max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-14 pb-10 sm:pb-14 text-center">
         <motion.h2
           initial={{ opacity: 0, y: 24 }}
@@ -338,7 +350,9 @@ const PricingPage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 items-stretch">
           {PLANS.map((p, i) => {
-            const price = isYearly ? p.yearlyPrice : p.monthlyPrice;
+            const fullPrice = isYearly ? p.yearlyPrice : p.monthlyPrice;
+            const hasPromo = p.tier !== "starter";
+            const price = hasPromo ? Math.round(fullPrice / 2) : fullPrice;
             const credits = isYearly ? p.yearlyCredits : p.monthlyCredits;
             const isElite = p.tier === "elite";
 
@@ -431,7 +445,7 @@ const PricingPage = () => {
                     {p.name}
                   </h3>
 
-                  <div className="mt-3 flex items-baseline gap-1.5">
+                  <div className="mt-3 flex items-baseline gap-1.5 flex-wrap">
                     <span
                       className="font-black leading-none"
                       style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)" }}
@@ -441,11 +455,24 @@ const PricingPage = () => {
                     <span className="text-sm font-medium" style={{ color: p.subText }}>
                       /{isYearly ? "year" : "month"}
                     </span>
+                    {hasPromo && (
+                      <span className="text-base font-bold line-through opacity-60 ms-1" style={{ color: p.subText }}>
+                        ${fullPrice}
+                      </span>
+                    )}
                   </div>
+                  {hasPromo && (
+                    <div className="mt-1.5">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                        -50% WELCOME50
+                      </span>
+                    </div>
+                  )}
 
                   <p className="mt-1 text-sm font-semibold" style={{ color: p.subText }}>
                     {credits}
                   </p>
+
 
                   {p.monthlyPrice >= 29 && (
                     <div className="mt-4">
