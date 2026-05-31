@@ -4253,6 +4253,8 @@ Ask me anything to get started!`;
                     </motion.div>
                   </div>
                 );
+              })()}
+
 
             </div>
           ) : (
