@@ -19,6 +19,7 @@ import AnimatedInput from "@/components/chat/AnimatedInput";
 import ModelPickerSheet from "@/components/model-picker/ModelPickerSheet";
 import { ModelBrandIcon } from "@/components/model-picker/ModelSelector";
 import AgentsOnboarding from "@/components/chat/AgentsOnboarding";
+import ChatTour from "@/components/chat/ChatTour";
 import ThinkingLoader from "@/components/chat/ThinkingLoader";
 import FancyButton from "@/components/branding/FancyButton";
 import type { AgentDef, AgentModel } from "@/lib/agentRegistry";
@@ -4649,6 +4650,9 @@ Ask me anything to get started!`;
 
               <div className="relative mx-auto w-full max-w-3xl">
                 <div className="md:hidden"><AgentsOnboarding /></div>
+                <ChatTour />
+                <div data-tour="composer">
+
 
                 <AnimatePresence>
                   {plusMenuOpen && renderPlusMenu()}
@@ -4929,6 +4933,9 @@ Ask me anything to get started!`;
                     })()
                   }
                 />
+                </div>
+
+
 
                 {/* Apps strip merged under the input (desktop) — hidden once a chat starts */}
                 {messages.length === 0 && (() => {
