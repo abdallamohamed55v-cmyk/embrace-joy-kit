@@ -230,7 +230,7 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-3">
+          <div className="mt-8">
             <div
               className="bg-white border-2 border-black p-3 flex flex-col"
               style={{ boxShadow: "4px 4px 0 0 #000" }}
@@ -242,18 +242,8 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
                 {timerExpired ? "00:00:00" : fmt(remaining)}
               </span>
             </div>
-            <div
-              className="bg-black border-2 border-black p-3 flex flex-col"
-              style={{ boxShadow: "4px 4px 0 0 #FF4D00" }}
-            >
-              <span className="text-[10px] font-black uppercase text-[#FFD700] leading-none mb-2 tracking-wider">
-                Spots left today
-              </span>
-              <span className="text-xl font-black tabular-nums tracking-tighter text-white leading-none">
-                {spotsLeft === null ? "—" : `${spotsLeft}/${totalSlots}`}
-              </span>
-            </div>
           </div>
+
 
         </div>
 
