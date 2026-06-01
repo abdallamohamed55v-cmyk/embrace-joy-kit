@@ -197,15 +197,11 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
         {/* ===== TOP CREAM ===== */}
         <div className="pt-10 px-7 pb-10 z-10">
           <div className="mb-5">
-            <div className="inline-block bg-black text-white px-3 py-1 rounded-sm mb-2">
-              <span className="uppercase font-black text-[10px] tracking-[0.3em]">
-                Premium Access
-              </span>
-            </div>
             <h3 className="uppercase font-black text-2xl tracking-tighter text-[#FF4D00]">
               Megsy Pro
             </h3>
           </div>
+
 
           <div className="leading-[0.9]">
             <div className="flex items-baseline gap-3 flex-wrap">
