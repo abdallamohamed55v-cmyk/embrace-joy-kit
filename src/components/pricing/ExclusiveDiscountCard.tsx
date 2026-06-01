@@ -245,17 +245,8 @@ export default function ExclusiveDiscountCard({ onClaim }: Props) {
 
         {/* ===== BOTTOM DARK ===== */}
         <div className="relative flex-1 bg-[#0F0F0F] p-7 pt-10 border-t-4 border-black">
-          {/* Bonus badge */}
-          <div className="absolute top-0 left-7 -translate-y-1/2">
-            <div
-              className="bg-[#FFD700] px-5 py-2.5 border-2 border-black flex items-center gap-2"
-              style={{ boxShadow: "4px 4px 0 0 #000" }}
-            >
-              <span className="font-black text-black text-[11px] uppercase tracking-tight">
-                +3 Months Free Credits
-              </span>
-            </div>
-          </div>
+
+
 
           <ul className="mt-4 space-y-5">
             {perks.map((p) => (
